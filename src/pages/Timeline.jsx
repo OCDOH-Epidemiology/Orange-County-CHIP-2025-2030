@@ -5,15 +5,47 @@ import { formatLongDate, milestoneStatusLabel } from '../lib/format.js';
 
 /**
  * Cross-cutting timeline: every milestone from all priority areas, grouped by
- * calendar year. Colored dots identify which priority area each item belongs
- * to. Scroll-driven storytelling animations reveal milestones as users scroll.
+ * priority area (not calendar year). Within each priority, milestones are
+ * ordered chronologically. Scroll-driven storytelling animations reveal
+ * milestones as users scroll through the narrative of each priority's journey.
  */
+
 const PALETTE = {
-  0: { dot: 'bg-brand-blue', text: 'text-brand-blue', border: 'border-brand-blue' },
-  1: { dot: 'bg-brand-green', text: 'text-brand-green', border: 'border-brand-green' },
-  2: { dot: 'bg-amber-600', text: 'text-amber-700', border: 'border-amber-600' },
-  3: { dot: 'bg-purple-600', text: 'text-purple-700', border: 'border-purple-600' },
-  4: { dot: 'bg-rose-600', text: 'text-rose-700', border: 'border-rose-600' },
+  0: { 
+    dot: 'bg-brand-blue', 
+    text: 'text-brand-blue', 
+    border: 'border-brand-blue',
+    bg: 'bg-brand-blue/5',
+    gradient: 'from-brand-blue/10'
+  },
+  1: { 
+    dot: 'bg-brand-green', 
+    text: 'text-brand-green', 
+    border: 'border-brand-green',
+    bg: 'bg-brand-green/5',
+    gradient: 'from-brand-green/10'
+  },
+  2: { 
+    dot: 'bg-amber-600', 
+    text: 'text-amber-700', 
+    border: 'border-amber-600',
+    bg: 'bg-amber-50',
+    gradient: 'from-amber-100/50'
+  },
+  3: { 
+    dot: 'bg-purple-600', 
+    text: 'text-purple-700', 
+    border: 'border-purple-600',
+    bg: 'bg-purple-50',
+    gradient: 'from-purple-100/50'
+  },
+  4: { 
+    dot: 'bg-rose-600', 
+    text: 'text-rose-700', 
+    border: 'border-rose-600',
+    bg: 'bg-rose-50',
+    gradient: 'from-rose-100/50'
+  },
 };
 
 /**
@@ -73,74 +105,116 @@ function useScrollReveal({ threshold = 0.15, rootMargin = '0px 0px -60px 0px', o
 }
 
 /**
+ * Status badge for milestone items.
+ */
+function StatusBadge({ status }) {
+  const styles = {
+    complete: 'bg-green-100 text-green-800 border-green-200',
+    in_progress: 'bg-blue-100 text-blue-800 border-blue-200',
+    not_started: 'bg-slate-100 text-slate-600 border-slate-200',
+  };
+  return (
+    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${styles[status] || styles.not_started}`}>
+      {milestoneStatusLabel(status)}
+    </span>
+  );
+}
+
+/**
  * Individual milestone item with scroll-reveal animation.
  */
-function MilestoneItem({ id, priority, milestone, colorIdx, revealIndex }) {
+function MilestoneItem({ milestone, colorIdx, revealIndex }) {
   const { ref, isVisible } = useScrollReveal({ threshold: 0.2 });
   const c = PALETTE[colorIdx];
 
   return (
     <li
       ref={ref}
-      className={`timeline-row pl-8 pr-2 py-3 relative timeline-milestone ${isVisible ? 'is-visible' : ''}`}
+      className={`timeline-row pl-8 pr-2 py-4 relative timeline-milestone ${isVisible ? 'is-visible' : ''}`}
       style={{ '--reveal-delay': revealIndex }}
     >
       <span
         aria-hidden="true"
-        className={`absolute left-0 top-4 inline-block w-5 h-5 rounded-full ${c.dot} ring-4 ring-slate-50 timeline-dot ${isVisible ? 'is-visible' : ''}`}
+        className={`absolute left-0 top-5 inline-block w-5 h-5 rounded-full ${c.dot} ring-4 ring-slate-50 timeline-dot ${isVisible ? 'is-visible' : ''}`}
         style={{ '--reveal-delay': revealIndex }}
       />
-      <div className="flex flex-wrap items-baseline gap-x-3 text-sm">
-        <span className="font-semibold text-slate-900">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+        <span className="font-semibold text-slate-900 text-sm">
           {formatLongDate(milestone.targetDate)}
         </span>
-        <Link
-          to={`/priority/${priority.id}`}
-          className={`text-xs font-semibold uppercase tracking-wide ${c.text} hover:underline`}
-        >
-          {priority.priority}
-        </Link>
-        <span className="text-xs text-slate-500">
-          {milestoneStatusLabel(milestone.status)}
-        </span>
+        <StatusBadge status={milestone.status} />
       </div>
-      <p className="mt-1 text-slate-800">{milestone.description}</p>
+      <p className="mt-2 text-slate-800">{milestone.description}</p>
+      <p className="mt-1 text-xs text-slate-500">
+        Data source: {milestone.dataSource} · Reporting: {milestone.frequency}
+      </p>
     </li>
   );
 }
 
 /**
- * Year section with chapter title animation.
+ * Priority section with chapter title animation.
+ * Each priority area is a "chapter" in the scroll story.
  */
-function YearSection({ year, items, isActive, sectionRef }) {
+function PrioritySection({ priority, colorIdx, isActive, sectionRef }) {
+  const c = PALETTE[colorIdx];
+  const milestones = priority.milestones;
+  
   return (
-    <section ref={sectionRef} aria-labelledby={`year-${year}`}>
-      <h2
-        id={`year-${year}`}
-        className={`year-chapter text-lg font-semibold text-slate-900 border-b border-slate-200 pb-2 sticky top-0 bg-slate-50/95 backdrop-blur z-10 ${isActive ? 'is-active' : ''}`}
-      >
-        <span className="year-chapter-text inline-block">{year}</span>
-      </h2>
-      <ol className="mt-4 relative timeline-rail">
-        {items.map(({ id, priority, milestone, colorIdx }, itemIndex) => (
+    <section 
+      ref={sectionRef} 
+      aria-labelledby={`priority-${priority.id}`}
+      className="mb-12"
+    >
+      <div className={`priority-chapter rounded-lg p-4 -mx-4 transition-all duration-300 ${isActive ? c.bg : ''}`}>
+        <div className="flex items-start gap-3">
+          <span 
+            aria-hidden="true" 
+            className={`flex-shrink-0 w-4 h-4 rounded-full ${c.dot} mt-1`}
+          />
+          <div className="flex-1">
+            <Link 
+              to={`/priority/${priority.id}`}
+              id={`priority-${priority.id}`}
+              className={`priority-chapter-title block text-xl font-bold hover:underline transition-colors ${isActive ? c.text : 'text-slate-900'}`}
+            >
+              {priority.priority}
+            </Link>
+            <p className="text-sm text-slate-600 mt-0.5">{priority.domain}</p>
+            <p className="text-sm text-slate-700 mt-1">
+              <span className="font-medium">Goal:</span> {priority.goal}
+            </p>
+          </div>
+        </div>
+      </div>
+      
+      <ol className="mt-4 ml-4 relative timeline-rail">
+        {milestones.map((milestone, itemIndex) => (
           <MilestoneItem
-            key={id}
-            id={id}
-            priority={priority}
+            key={milestone.id}
             milestone={milestone}
             colorIdx={colorIdx}
             revealIndex={itemIndex}
           />
         ))}
       </ol>
+      
+      <div className="mt-4 ml-4 pl-8">
+        <Link 
+          to={`/priority/${priority.id}`}
+          className={`text-sm font-medium ${c.text} hover:underline`}
+        >
+          View full {priority.priority} details →
+        </Link>
+      </div>
     </section>
   );
 }
 
 /**
- * Floating scroll progress indicator with year ticks.
+ * Floating scroll progress indicator with priority ticks.
  */
-function ScrollProgressIndicator({ years, activeYear, progress, onYearClick }) {
+function ScrollProgressIndicator({ priorities, activePriority, progress, onPriorityClick }) {
   const prefersReducedMotion = usePrefersReducedMotion();
 
   if (prefersReducedMotion) return null;
@@ -150,17 +224,24 @@ function ScrollProgressIndicator({ years, activeYear, progress, onYearClick }) {
       aria-label="Timeline progress"
       className={`scroll-progress-container ${progress > 0.05 ? 'is-visible' : ''}`}
     >
-      {years.map((year) => (
-        <button
-          key={year}
-          onClick={() => onYearClick(year)}
-          className={`scroll-progress-year ${activeYear === year ? 'is-active' : ''}`}
-          aria-label={`Jump to ${year}`}
-          aria-current={activeYear === year ? 'true' : undefined}
-        >
-          {year}
-        </button>
-      ))}
+      {priorities.map((p, idx) => {
+        const c = PALETTE[idx % Object.keys(PALETTE).length];
+        return (
+          <button
+            key={p.id}
+            onClick={() => onPriorityClick(p.id)}
+            className={`scroll-progress-priority group flex items-center gap-1.5 ${activePriority === p.id ? 'is-active' : ''}`}
+            aria-label={`Jump to ${p.priority}`}
+            aria-current={activePriority === p.id ? 'true' : undefined}
+          >
+            <span 
+              className={`w-2 h-2 rounded-full ${c.dot} transition-transform group-hover:scale-125`}
+              aria-hidden="true"
+            />
+            <span className="scroll-progress-label">{p.priority.split(' ')[0]}</span>
+          </button>
+        );
+      })}
       <div className="scroll-progress-track" aria-hidden="true">
         <div
           className="scroll-progress-fill"
@@ -172,33 +253,15 @@ function ScrollProgressIndicator({ years, activeYear, progress, onYearClick }) {
 }
 
 export default function Timeline({ data }) {
-  const priorityIndex = new Map(data.priorityAreas.map((p, i) => [p.id, i]));
   const containerRef = useRef(null);
-  const yearRefsMap = useRef(new Map());
-  const [activeYear, setActiveYear] = useState(null);
+  const priorityRefsMap = useRef(new Map());
+  const [activePriority, setActivePriority] = useState(null);
   const [scrollProgress, setScrollProgress] = useState(0);
   const prefersReducedMotion = usePrefersReducedMotion();
 
-  const items = data.priorityAreas.flatMap((p) =>
-    p.milestones.map((m) => ({
-      id: `${p.id}::${m.id}`,
-      priority: p,
-      milestone: m,
-      colorIdx: priorityIndex.get(p.id) % Object.keys(PALETTE).length,
-    }))
-  );
-  items.sort((a, b) => a.milestone.targetDate.localeCompare(b.milestone.targetDate));
+  const priorities = data.priorityAreas;
 
-  const byYear = new Map();
-  for (const item of items) {
-    const year = item.milestone.targetDate.slice(0, 4);
-    if (!byYear.has(year)) byYear.set(year, []);
-    byYear.get(year).push(item);
-  }
-
-  const years = Array.from(byYear.keys()).sort();
-
-  // Track active year and scroll progress
+  // Track active priority and scroll progress
   useEffect(() => {
     if (prefersReducedMotion) return;
 
@@ -211,30 +274,30 @@ export default function Timeline({ data }) {
 
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
-        const year = entry.target.dataset.year;
-        if (year) ratios.set(year, entry.intersectionRatio);
+        const priorityId = entry.target.dataset.priorityId;
+        if (priorityId) ratios.set(priorityId, entry.intersectionRatio);
       });
 
       let maxRatio = 0;
       let mostVisible = null;
-      ratios.forEach((ratio, year) => {
+      ratios.forEach((ratio, id) => {
         if (ratio > maxRatio) {
           maxRatio = ratio;
-          mostVisible = year;
+          mostVisible = id;
         }
       });
 
       if (mostVisible && maxRatio > 0.1) {
-        setActiveYear(mostVisible);
+        setActivePriority(mostVisible);
       }
     }, observerOptions);
 
-    yearRefsMap.current.forEach((el) => {
+    priorityRefsMap.current.forEach((el) => {
       if (el) observer.observe(el);
     });
 
     return () => observer.disconnect();
-  }, [years, prefersReducedMotion]);
+  }, [priorities, prefersReducedMotion]);
 
   // Track scroll progress
   useEffect(() => {
@@ -258,32 +321,71 @@ export default function Timeline({ data }) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [prefersReducedMotion]);
 
-  const getYearRef = useCallback((year) => (el) => {
+  const getPriorityRef = useCallback((priorityId) => (el) => {
     if (el) {
-      yearRefsMap.current.set(year, el);
-      el.dataset.year = year;
+      priorityRefsMap.current.set(priorityId, el);
+      el.dataset.priorityId = priorityId;
     }
   }, []);
 
-  const handleYearClick = useCallback((year) => {
-    const el = yearRefsMap.current.get(year);
+  const handlePriorityClick = useCallback((priorityId) => {
+    const el = priorityRefsMap.current.get(priorityId);
     if (el) {
       el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }, []);
 
+  // Calculate milestone stats
+  const totalMilestones = priorities.reduce((n, p) => n + p.milestones.length, 0);
+  const completedMilestones = priorities.reduce(
+    (n, p) => n + p.milestones.filter(m => m.status === 'complete').length, 
+    0
+  );
+  const inProgressMilestones = priorities.reduce(
+    (n, p) => n + p.milestones.filter(m => m.status === 'in_progress').length, 
+    0
+  );
+
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
       <Breadcrumbs items={[{ label: 'Overview', to: '/' }, { label: 'Timeline' }]} />
-      <h1 className="text-3xl font-bold text-slate-900">Timeline: 2026 – 2030</h1>
+      <h1 className="text-3xl font-bold text-slate-900">Implementation Timeline</h1>
       <p className="mt-2 text-slate-700 max-w-3xl">
-        Every milestone across the three Community Health Improvement Plan
-        priority areas, in the order it is scheduled to be completed. Colored
-        dots identify which priority area a milestone belongs to.
+        Track progress across all {priorities.length} Community Health Improvement Plan 
+        priority areas. Each section shows the milestones and their current status 
+        as we work toward our 2030 goals.
       </p>
 
+      {/* Progress summary */}
+      <div className="mt-6 p-4 rounded-lg bg-slate-100 border border-slate-200">
+        <div className="flex flex-wrap gap-6 text-sm">
+          <div>
+            <span className="text-slate-600">Total milestones:</span>{' '}
+            <span className="font-semibold text-slate-900">{totalMilestones}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-green-500" aria-hidden="true" />
+            <span className="text-slate-600">Complete:</span>{' '}
+            <span className="font-semibold text-green-700">{completedMilestones}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-blue-500" aria-hidden="true" />
+            <span className="text-slate-600">In progress:</span>{' '}
+            <span className="font-semibold text-blue-700">{inProgressMilestones}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-slate-400" aria-hidden="true" />
+            <span className="text-slate-600">Not started:</span>{' '}
+            <span className="font-semibold text-slate-700">
+              {totalMilestones - completedMilestones - inProgressMilestones}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Priority legend */}
       <ul aria-label="Priority area legend" className="mt-6 flex flex-wrap gap-4">
-        {data.priorityAreas.map((p, i) => {
+        {priorities.map((p, i) => {
           const c = PALETTE[i % Object.keys(PALETTE).length];
           return (
             <li key={p.id} className="flex items-center gap-2">
@@ -296,23 +398,23 @@ export default function Timeline({ data }) {
         })}
       </ul>
 
-      <div ref={containerRef} className="mt-8 space-y-8">
-        {years.map((year) => (
-          <YearSection
-            key={year}
-            year={year}
-            items={byYear.get(year)}
-            isActive={activeYear === year}
-            sectionRef={getYearRef(year)}
+      <div ref={containerRef} className="mt-8 space-y-4">
+        {priorities.map((priority, idx) => (
+          <PrioritySection
+            key={priority.id}
+            priority={priority}
+            colorIdx={idx % Object.keys(PALETTE).length}
+            isActive={activePriority === priority.id}
+            sectionRef={getPriorityRef(priority.id)}
           />
         ))}
       </div>
 
       <ScrollProgressIndicator
-        years={years}
-        activeYear={activeYear}
+        priorities={priorities}
+        activePriority={activePriority}
         progress={scrollProgress}
-        onYearClick={handleYearClick}
+        onPriorityClick={handlePriorityClick}
       />
     </div>
   );

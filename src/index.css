@@ -191,25 +191,39 @@ body {
   z-index: 1;
 }
 
-/* --- Year chapter title: enhanced sticky header when active --- */
-.year-chapter {
+/* --- Priority chapter: enhanced card when active --- */
+.priority-chapter {
   transition: all 250ms ease-out;
 }
 
-.year-chapter.is-active {
-  background: linear-gradient(to right, rgba(27, 75, 138, 0.08), transparent);
-  border-color: #1B4B8A;
-  padding-left: 0.75rem;
-  margin-left: -0.75rem;
+.priority-chapter-title {
+  transition: color 200ms ease-out;
 }
 
-.year-chapter-text {
-  transition: transform 200ms ease-out, color 200ms ease-out;
+/* --- Scroll progress indicator: priority-based navigation --- */
+.scroll-progress-priority {
+  font-size: 0.625rem;
+  font-weight: 600;
+  color: #64748b;
+  transition: color 200ms ease-out, transform 200ms ease-out;
+  cursor: pointer;
+  padding: 0.25rem 0;
 }
 
-.year-chapter.is-active .year-chapter-text {
-  transform: scale(1.02);
+.scroll-progress-priority:hover {
   color: #1B4B8A;
+}
+
+.scroll-progress-priority.is-active {
+  color: #1B4B8A;
+  transform: scale(1.05);
+}
+
+.scroll-progress-label {
+  max-width: 60px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* --- Scroll progress indicator: thin bar with year ticks --- */
