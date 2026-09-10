@@ -39,12 +39,13 @@ export default function MilestoneList({ milestones }) {
   }
   return (
     <ol className="space-y-3">
-      {milestones.map((m) => {
+      {milestones.map((m, index) => {
         const s = STATE[m.status] ?? STATE.not_started;
         return (
           <li
             key={m.id}
-            className={`flex items-start gap-3 rounded-md border px-4 py-3 ${s.ring}`}
+            className={`flex items-start gap-3 rounded-md border px-4 py-3 animate-stagger ${s.ring}`}
+            style={{ '--stagger-index': index }}
           >
             <span
               className={`mt-1 shrink-0 inline-flex items-center justify-center w-6 h-6 rounded-full ${s.dot}`}
