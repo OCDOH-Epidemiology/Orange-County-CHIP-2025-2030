@@ -37,7 +37,11 @@
           "value": 81.9,
           "year": 2030
         },
-        "currentValue": 79.2,
+        "currentValue": null,
+        "asOfDate": null,
+        "source": null,
+        "refreshCycleYears": 3,
+        "direction": "higher_is_better",
         "dataSource": "Orange County Community Health Survey, 2024",
         "reportingFrequency": "Every 3 years",
         "stateComparison": {
@@ -57,7 +61,8 @@
           "baseline": "None",
           "dataSource": "CHIP evaluation database",
           "frequency": "Once",
-          "status": "complete"
+          "status": "complete",
+          "lastUpdated": "2026-08-15"
         },
         {
           "id": "3.1-m2",
@@ -66,7 +71,8 @@
           "baseline": "To be determined December 31, 2026",
           "dataSource": "CHIP evaluation database",
           "frequency": "Quarterly",
-          "status": "in_progress"
+          "status": "in_progress",
+          "lastUpdated": "2026-08-22"
         }
       ],
       "partners": [
@@ -232,7 +238,11 @@
           "value": 44,
           "year": 2030
         },
-        "currentValue": 45.8,
+        "currentValue": null,
+        "asOfDate": null,
+        "source": null,
+        "refreshCycleYears": 1,
+        "direction": "lower_is_better",
         "dataSource": "Orange County Community Health Survey, 2024",
         "reportingFrequency": "Yearly",
         "stateComparison": {
@@ -254,7 +264,8 @@
           "baseline": "Zero",
           "dataSource": "CHIP evaluation database",
           "frequency": "Once",
-          "status": "complete"
+          "status": "complete",
+          "lastUpdated": "2026-07-20"
         },
         {
           "id": "5.1-m2",
@@ -263,7 +274,8 @@
           "baseline": "N/A",
           "dataSource": "CHIP evaluation database",
           "frequency": "Once",
-          "status": "complete"
+          "status": "complete",
+          "lastUpdated": "2026-08-01"
         },
         {
           "id": "5.1-m3",
@@ -272,7 +284,8 @@
           "baseline": "Zero",
           "dataSource": "CHIP evaluation database",
           "frequency": "Quarterly",
-          "status": "in_progress"
+          "status": "in_progress",
+          "lastUpdated": "2026-08-28"
         }
       ],
       "partners": [
@@ -366,7 +379,11 @@
           "value": 78.8,
           "year": 2030
         },
-        "currentValue": 76.3,
+        "currentValue": null,
+        "asOfDate": null,
+        "source": null,
+        "refreshCycleYears": 4,
+        "direction": "higher_is_better",
         "dataSource": "NYS Behavioral Risk Factor Surveillance Survey (BRFSS), 2024",
         "reportingFrequency": "Every 4 years",
         "stateComparison": {
@@ -388,7 +405,8 @@
           "baseline": "Zero",
           "dataSource": "CHIP Evaluation Database",
           "frequency": "Quarterly",
-          "status": "in_progress"
+          "status": "in_progress",
+          "lastUpdated": "2026-08-10"
         },
         {
           "id": "33.0-m2",
@@ -397,7 +415,8 @@
           "baseline": "200 (3-year average 2024–YTD 2026)",
           "dataSource": "CHIP Evaluation Database",
           "frequency": "Quarterly",
-          "status": "in_progress"
+          "status": "in_progress",
+          "lastUpdated": "2026-08-10"
         },
         {
           "id": "33.0-m3",
@@ -406,7 +425,8 @@
           "baseline": "To be determined",
           "dataSource": "Provided by CSP of the Hudson Valley (HITCH)",
           "frequency": "Quarterly",
-          "status": "not_started"
+          "status": "not_started",
+          "lastUpdated": null
         }
       ],
       "partners": [

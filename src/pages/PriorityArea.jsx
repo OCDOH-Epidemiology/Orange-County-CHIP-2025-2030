@@ -1,7 +1,8 @@
 import { useParams, Link } from 'react-router-dom';
 import Breadcrumbs from '../components/Breadcrumbs.jsx';
 import Section from '../components/Section.jsx';
-import ProgressBar from '../components/ProgressBar.jsx';
+import ActivityProgressBar from '../components/ActivityProgressBar.jsx';
+import OutcomeWatch from '../components/OutcomeWatch.jsx';
 import MilestoneList from '../components/MilestoneList.jsx';
 import PartnerList from '../components/PartnerList.jsx';
 import Disclosure from '../components/Disclosure.jsx';
@@ -51,11 +52,19 @@ export default function PriorityArea({ data }) {
       </header>
 
       <div className="grid gap-6">
+        {/* Primary: Activity Progress (headline) */}
+        <Section title="Activity Progress" subtitle="Tracking whether planned work is happening.">
+          <ActivityProgressBar priority={priority} showBadge={true} showDisclaimer={true} />
+        </Section>
+
         <Section title={`Objective ${priority.objective.number}`} subtitle={priority.objective.metric}>
           <p className="text-slate-800">{priority.objective.description}</p>
+          
+          {/* Secondary: Outcome Watch (separate, visually distinct) */}
           <div className="mt-4">
-            <ProgressBar objective={priority.objective} />
+            <OutcomeWatch objective={priority.objective} />
           </div>
+          
           <dl className="mt-5 grid gap-x-6 gap-y-2 text-sm text-slate-700 sm:grid-cols-2">
             <div>
               <dt className="inline font-semibold">Data source:</dt>{' '}

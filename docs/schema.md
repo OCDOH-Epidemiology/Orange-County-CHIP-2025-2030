@@ -6,15 +6,38 @@ confidently. The Excel template in `template/` mirrors this schema 1:1, so if
 you prefer editing a spreadsheet you can regenerate the JSON with
 `npm run data:build`.
 
+## Progression Measurement Methodology
+
+The dashboard uses a dual-metric approach to track progress:
+
+### Primary: Activity Progress (headline metric)
+- **Per priority area:** Activity Progress % = (Σ milestone weights / milestone count) × 100
+- **Milestone weights:** not_started=0, in_progress=0.5, complete=1.0
+- **Plan-level Activity Progress:** Mean of the 3 area percents (equal weight; NOT weighted by milestone count)
+- **Activity badge (derived, not hand-entered):**
+  - `on_track`: ≥50% milestones complete AND activity within last 90 days
+  - `underway`: ≥1 milestone in_progress or complete, activity within 180 days
+  - `getting_started`: work exists but <1 milestone complete, area age <180 days
+  - `stalled`: no milestone status change or partner activity in >180 days
+
+### Secondary: Outcome Watch (separate card)
+- Always shows baseline (with year) and target (with year)
+- Shows `currentValue` ONLY if a real measurement exists, always with `asOfDate` + source
+- If no fresh value: static baseline→target reference + "Next measurement expected: [year]" — NO outcome bar fill
+- Never fabricate `currentValue`; never derive outcome % from milestones; never fill outcome bar when awaiting measurement
+
 ## Design goals
 
 1. **One consistent shape per priority area.** Every priority area has the same
    fields, so the app is reusable for future CHIP cycles and for other counties.
 2. **Explicit "not tracked yet" state.** Objectives support an optional
    `currentValue` that may be `null` when data collection hasn't begun; the app
-   renders a neutral "baseline established, tracking to begin" state rather
-   than a misleading progress bar.
-3. **No hidden business logic in the schema.** Partner engagement is captured
+   renders a neutral "baseline established, awaiting next survey" state rather
+   than a misleading outcome progress bar.
+3. **Separate activity vs outcome tracking.** Activity Progress (milestone-based)
+   is the headline metric. Outcome Watch shows health outcome measurements when
+   available, but never conflates milestone progress with health outcomes.
+4. **No hidden business logic in the schema.** Partner engagement is captured
    with a free-form `activityStatus` string. The app displays whatever the
    string says. OCDOH will define the meaning of values like "active" later;
    the schema and code intentionally do not interpret them.
@@ -72,22 +95,27 @@ the same numbers, so they are merged into a single object here to avoid drift.
 | `unit`               | string        | yes      | Unit of the values (`"percent"`, `"count"`, etc.).                                                         |
 | `baseline`           | `{value,year}`| yes      | Starting value and the year it was measured.                                                               |
 | `target`             | `{value,year}`| yes      | End-of-plan target value and its year.                                                                     |
-| `currentValue`       | number \| null| yes      | Most recent measurement; `null` when tracking hasn't begun. The UI treats `null` as "tracking to begin".   |
-| `dataSource`         | string        | yes      | Where the baseline/current values come from.                                                               |
+| `currentValue`       | number \| null| yes      | Most recent ACTUAL measurement; `null` when no measurement exists. NEVER fabricate — UI shows "awaiting".  |
+| `asOfDate`           | string \| null| no       | ISO date when `currentValue` was measured. Required when `currentValue` is not null.                       |
+| `source`             | string \| null| no       | Source of the `currentValue` measurement. May differ from `dataSource` for interim measurements.           |
+| `refreshCycleYears`  | number \| null| no       | How many years between measurements (e.g. `3` for "Every 3 years"). Parsed from `reportingFrequency` if null. |
+| `direction`          | enum \| null  | no       | `"lower_is_better"` or `"higher_is_better"`. Inferred from baseline/target relationship if null.           |
+| `dataSource`         | string        | yes      | Where the baseline/target values come from.                                                                |
 | `reportingFrequency` | string        | yes      | How often the value is refreshed (`"Yearly"`, `"Every 3 years"`, `"Every 4 years"`, etc.).                 |
 | `stateComparison`    | object \| null| no       | `{ value, label }` for the NYSDOH Prevention Agenda comparison. `null` if not applicable.                  |
 
 ### `milestone`
 
-| Field         | Type    | Required | Notes                                                                                                                            |
-| ------------- | ------- | -------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| `id`          | string  | yes      | Unique within the priority area (e.g. `"3.1-m1"`).                                                                               |
-| `description` | string  | yes      | The activity/milestone as written.                                                                                               |
-| `targetDate`  | string  | yes      | ISO date (`YYYY-MM-DD`). Milestones stated as "By December 2026" use `2026-12-31`; "By June 2028" uses `2028-06-30`.             |
-| `baseline`    | string  | yes      | Free-form (e.g. `"Zero"`, `"None"`, `"To be determined December 31, 2026"`, `"200 (3-year average 2024-YTD 2026)"`).              |
-| `dataSource`  | string  | yes      | Where progress is measured from.                                                                                                 |
-| `frequency`   | string  | yes      | How often it's reported (`"Once"`, `"Quarterly"`, etc.).                                                                         |
-| `status`      | enum    | yes      | One of `"not_started"`, `"in_progress"`, `"complete"`. Strict — the converter rejects other values.                              |
+| Field         | Type          | Required | Notes                                                                                                                            |
+| ------------- | ------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `id`          | string        | yes      | Unique within the priority area (e.g. `"3.1-m1"`).                                                                               |
+| `description` | string        | yes      | The activity/milestone as written.                                                                                               |
+| `targetDate`  | string        | yes      | ISO date (`YYYY-MM-DD`). Milestones stated as "By December 2026" use `2026-12-31`; "By June 2028" uses `2028-06-30`.             |
+| `baseline`    | string        | yes      | Free-form (e.g. `"Zero"`, `"None"`, `"To be determined December 31, 2026"`, `"200 (3-year average 2024-YTD 2026)"`).              |
+| `dataSource`  | string        | yes      | Where progress is measured from.                                                                                                 |
+| `frequency`   | string        | yes      | How often it's reported (`"Once"`, `"Quarterly"`, etc.).                                                                         |
+| `status`      | enum          | yes      | One of `"not_started"`, `"in_progress"`, `"complete"`. Strict — the converter rejects other values.                              |
+| `lastUpdated` | string \| null| no       | ISO date when the status was last changed. Used to derive activity badges.                                                       |
 
 ### `partner`
 

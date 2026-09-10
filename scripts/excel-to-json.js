@@ -171,6 +171,9 @@ function parseMeta(records) {
   return meta;
 }
 
+// Direction enum for objective
+const DIRECTION_VALUES = ['lower_is_better', 'higher_is_better'];
+
 function parsePriorities(records) {
   const priorities = [];
   const seenIds = new Set();
@@ -181,6 +184,13 @@ function parsePriorities(records) {
     const id = requireField(r.priorityId, 'Priorities', row, 'priorityId');
     if (seenIds.has(id)) err('Priorities', row, `duplicate priorityId "${id}"`);
     seenIds.add(id);
+
+    // Parse direction if provided
+    const directionRaw = trim(r.direction).toLowerCase();
+    const direction = directionRaw && DIRECTION_VALUES.includes(directionRaw) ? directionRaw : null;
+    if (directionRaw && !direction) {
+      err('Priorities', row, `direction "${r.direction}" not recognized — expected one of ${DIRECTION_VALUES.join(', ')} or leave blank`);
+    }
 
     const priority = {
       id,
@@ -207,6 +217,10 @@ function parsePriorities(records) {
           year: toRequiredNumber(r.targetYear, 'Priorities', row, 'targetYear'),
         },
         currentValue: toNumber(r.currentValue, 'Priorities', row, 'currentValue'),
+        asOfDate: toISODate(r.asOfDate, 'Priorities', row, 'asOfDate', { required: false }),
+        source: optional(r.source),
+        refreshCycleYears: toNumber(r.refreshCycleYears, 'Priorities', row, 'refreshCycleYears'),
+        direction,
         dataSource: requireField(r.dataSource, 'Priorities', row, 'dataSource'),
         reportingFrequency: requireField(r.reportingFrequency, 'Priorities', row, 'reportingFrequency'),
         stateComparison:
@@ -264,6 +278,7 @@ function parseMilestones(records, priorityMap) {
       dataSource: requireField(r.dataSource, 'Milestones', row, 'dataSource'),
       frequency: requireField(r.frequency, 'Milestones', row, 'frequency'),
       status,
+      lastUpdated: toISODate(r.lastUpdated, 'Milestones', row, 'lastUpdated', { required: false }),
     });
   }
 }

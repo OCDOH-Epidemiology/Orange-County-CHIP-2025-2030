@@ -1,9 +1,13 @@
 import { Link } from 'react-router-dom';
-import ProgressBar from './ProgressBar.jsx';
+import { ActivityProgressCompact } from './ActivityProgressBar.jsx';
+import { OutcomeWatchCompact } from './OutcomeWatch.jsx';
 
 /**
  * Compact card for the landing page. Skimmable, plain-language.
  * The whole card is a clickable region (a large link).
+ *
+ * Leads with Activity Progress (milestone-based), not outcome progress.
+ * Outcome information shown as secondary compact reference.
  *
  * Accepts optional `style` and `className` props for animation support
  * (e.g., stagger animations from parent).
@@ -31,7 +35,11 @@ export default function PriorityCard({ priority, style, className = '' }) {
           <p className="text-slate-800">{priority.goal}</p>
         </div>
 
-        <ProgressBar objective={priority.objective} />
+        {/* Primary: Activity Progress (milestone-based) */}
+        <ActivityProgressCompact priority={priority} />
+
+        {/* Secondary: Outcome reference */}
+        <OutcomeWatchCompact objective={priority.objective} />
 
         <div className="mt-auto pt-2">
           <span className="inline-flex items-center gap-1 text-brand-blue font-medium group-hover:underline">

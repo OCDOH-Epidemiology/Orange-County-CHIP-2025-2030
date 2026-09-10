@@ -1,7 +1,21 @@
 import { formatValue } from '../lib/format.js';
 
 /**
- * Baseline -> Current -> Target progress bar with clear labeling.
+ * @deprecated This component is no longer used in the dashboard.
+ * 
+ * The Progression Measurement methodology now uses:
+ * - ActivityProgressBar.jsx - PRIMARY: milestone-based activity progress
+ * - OutcomeWatch.jsx - SECONDARY: actual health outcome measurements
+ * 
+ * This file is kept for reference. Activity Progress (milestone completion)
+ * is now the headline metric, and outcome measurements are shown separately
+ * in the Outcome Watch card only when real data exists.
+ * 
+ * See docs/schema.md for the full methodology documentation.
+ * 
+ * ---
+ * 
+ * LEGACY: Baseline -> Current -> Target progress bar with clear labeling.
  *
  * When `currentValue` is null (data isn't collected yet), we render a neutral
  * "tracking to begin" state instead of a misleading bar. This is intentional

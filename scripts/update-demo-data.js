@@ -2,9 +2,11 @@
 /**
  * update-demo-data.js
  *
- * Updates chip-sample.xlsx with fake demo data:
- * 1. Fills in plausible currentValue numbers for progress bars
- * 2. Sets milestone statuses to in_progress (not all not_started)
+ * Updates chip-sample.xlsx with demo data for the Progression Measurement methodology:
+ * 1. Clears currentValue (outcome values) — Activity Progress is the headline, not fake outcomes
+ * 2. Sets milestone statuses to in_progress/complete for demo variety
+ * 3. Adds lastUpdated dates to milestones for activity badge derivation
+ * 4. Adds new objective fields (direction, refreshCycleYears)
  *
  * Run: node scripts/update-demo-data.js
  * Then: npm run data:build:sample to regenerate JSON
@@ -20,91 +22,118 @@ const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, '..');
 const XLSX_PATH = path.join(repoRoot, 'template', 'chip-sample.xlsx');
 
-// Fake current values for demo - these are plausible progress points
-// Baseline -> CurrentValue -> Target
-const FAKE_CURRENT_VALUES = {
-  'nutrition-security': 79.2,  // Baseline: 78%, Target: 81.9% (increase goal)
-  'anxiety-stress': 45.8,      // Baseline: 47%, Target: 44% (decrease goal - progress = lower number)
-  'crc-screening': 76.3,       // Baseline: 75.1%, Target: 78.8% (increase goal)
+// Priority area configuration - NO fake outcome currentValues!
+// Outcome values should be null (awaiting measurement) unless real data exists
+const PRIORITY_CONFIG = {
+  'nutrition-security': { 
+    currentValue: null,  // Awaiting next survey
+    refreshCycleYears: 3,
+    direction: 'higher_is_better'
+  },
+  'anxiety-stress': { 
+    currentValue: null,  // Awaiting next survey
+    refreshCycleYears: 1,
+    direction: 'lower_is_better'
+  },
+  'crc-screening': { 
+    currentValue: null,  // Awaiting next survey
+    refreshCycleYears: 4,
+    direction: 'higher_is_better'
+  },
 };
 
-// Milestone status updates - most to in_progress, some complete for demo variety
-const MILESTONE_STATUSES = {
-  '3.1-m1': 'complete',      // First nutrition milestone complete
-  '3.1-m2': 'in_progress',   // Second nutrition milestone in progress
-  '5.1-m1': 'complete',      // First anxiety milestone complete
-  '5.1-m2': 'complete',      // Second anxiety milestone complete
-  '5.1-m3': 'in_progress',   // Third anxiety milestone in progress
-  '33.0-m1': 'in_progress',  // CRC screening - events in progress
-  '33.0-m2': 'in_progress',  // CRC screening - attendee increase in progress
-  '33.0-m3': 'not_started',  // CRC screening - physician enrollment (starts later)
+// Milestone status and lastUpdated for demo variety
+// Activity Progress is calculated from these statuses
+const MILESTONE_CONFIG = {
+  '3.1-m1': { status: 'complete', lastUpdated: '2026-08-15' },
+  '3.1-m2': { status: 'in_progress', lastUpdated: '2026-08-22' },
+  '5.1-m1': { status: 'complete', lastUpdated: '2026-07-20' },
+  '5.1-m2': { status: 'complete', lastUpdated: '2026-08-01' },
+  '5.1-m3': { status: 'in_progress', lastUpdated: '2026-08-28' },
+  '33.0-m1': { status: 'in_progress', lastUpdated: '2026-08-10' },
+  '33.0-m2': { status: 'in_progress', lastUpdated: '2026-08-10' },
+  '33.0-m3': { status: 'not_started', lastUpdated: null },
 };
+
+function ensureColumn(headers, data, columnName) {
+  let idx = headers.indexOf(columnName);
+  if (idx === -1) {
+    headers.push(columnName);
+    idx = headers.length - 1;
+    console.log(`  Added new column: ${columnName}`);
+  }
+  return idx;
+}
 
 function main() {
   console.log(`Reading: ${XLSX_PATH}`);
   const buf = fs.readFileSync(XLSX_PATH);
   const wb = XLSX.read(buf, { cellDates: true, type: 'buffer' });
 
-  // Update Priorities sheet with currentValue
+  // Update Priorities sheet
   const prioritiesSheet = wb.Sheets['Priorities'];
   const prioritiesData = XLSX.utils.sheet_to_json(prioritiesSheet, { header: 1, raw: true });
-
-  // Find currentValue column index
   const headers = prioritiesData[0];
+  
   const priorityIdIdx = headers.indexOf('priorityId');
-  const currentValueIdx = headers.indexOf('currentValue');
+  const currentValueIdx = ensureColumn(headers, prioritiesData, 'currentValue');
+  const asOfDateIdx = ensureColumn(headers, prioritiesData, 'asOfDate');
+  const sourceIdx = ensureColumn(headers, prioritiesData, 'source');
+  const refreshCycleYearsIdx = ensureColumn(headers, prioritiesData, 'refreshCycleYears');
+  const directionIdx = ensureColumn(headers, prioritiesData, 'direction');
 
-  if (currentValueIdx === -1) {
-    console.error('currentValue column not found in Priorities sheet');
-    process.exit(1);
-  }
-
-  // Update currentValue for each priority
+  // Update each priority
   for (let i = 1; i < prioritiesData.length; i++) {
     const row = prioritiesData[i];
     const priorityId = row[priorityIdIdx];
-    if (priorityId && FAKE_CURRENT_VALUES[priorityId] !== undefined) {
-      row[currentValueIdx] = FAKE_CURRENT_VALUES[priorityId];
-      console.log(`  Updated ${priorityId} currentValue to ${FAKE_CURRENT_VALUES[priorityId]}`);
+    const config = PRIORITY_CONFIG[priorityId];
+    if (config) {
+      row[currentValueIdx] = config.currentValue;  // null = awaiting measurement
+      row[asOfDateIdx] = '';
+      row[sourceIdx] = '';
+      row[refreshCycleYearsIdx] = config.refreshCycleYears;
+      row[directionIdx] = config.direction;
+      console.log(`  Updated ${priorityId}: currentValue=null (awaiting), direction=${config.direction}`);
     }
   }
 
-  // Write back to sheet
   const newPrioritiesSheet = XLSX.utils.aoa_to_sheet(prioritiesData);
   wb.Sheets['Priorities'] = newPrioritiesSheet;
 
-  // Update Milestones sheet with status
+  // Update Milestones sheet
   const milestonesSheet = wb.Sheets['Milestones'];
   const milestonesData = XLSX.utils.sheet_to_json(milestonesSheet, { header: 1, raw: true });
-
   const milestoneHeaders = milestonesData[0];
+  
   const milestoneIdIdx = milestoneHeaders.indexOf('milestoneId');
-  const statusIdx = milestoneHeaders.indexOf('status');
+  const statusIdx = ensureColumn(milestoneHeaders, milestonesData, 'status');
+  const lastUpdatedIdx = ensureColumn(milestoneHeaders, milestonesData, 'lastUpdated');
 
-  if (statusIdx === -1) {
-    console.error('status column not found in Milestones sheet');
-    process.exit(1);
-  }
-
-  // Update status for each milestone
+  // Update each milestone
   for (let i = 1; i < milestonesData.length; i++) {
     const row = milestonesData[i];
     const milestoneId = row[milestoneIdIdx];
-    if (milestoneId && MILESTONE_STATUSES[milestoneId] !== undefined) {
+    const config = MILESTONE_CONFIG[milestoneId];
+    if (config) {
       const oldStatus = row[statusIdx];
-      row[statusIdx] = MILESTONE_STATUSES[milestoneId];
-      console.log(`  Updated ${milestoneId} status: ${oldStatus} -> ${MILESTONE_STATUSES[milestoneId]}`);
+      row[statusIdx] = config.status;
+      row[lastUpdatedIdx] = config.lastUpdated || '';
+      console.log(`  Updated ${milestoneId}: status=${config.status}, lastUpdated=${config.lastUpdated || 'null'}`);
     }
   }
 
-  // Write back to sheet
   const newMilestonesSheet = XLSX.utils.aoa_to_sheet(milestonesData);
   wb.Sheets['Milestones'] = newMilestonesSheet;
 
   // Save the workbook
   XLSX.writeFile(wb, XLSX_PATH);
   console.log(`\nWrote: ${XLSX_PATH}`);
-  console.log('Run "npm run data:build:sample" to regenerate chip-data.json');
+  console.log('\nDemo data configured for Progression Measurement methodology:');
+  console.log('  - Activity Progress (milestone-based) is the headline metric');
+  console.log('  - Outcome currentValues cleared to null (awaiting measurement)');
+  console.log('  - Milestone statuses set for demo variety');
+  console.log('  - lastUpdated dates added for activity badge calculation');
+  console.log('\nRun "npm run data:build:sample" to regenerate chip-data.json');
 }
 
 main();
