@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Breadcrumbs from '../components/Breadcrumbs.jsx';
+import { useDocumentTitle } from '../lib/useDocumentTitle.js';
 
 /**
  * Partner directory across all priority areas. One row per partner + priority
@@ -8,6 +9,7 @@ import Breadcrumbs from '../components/Breadcrumbs.jsx';
  * Filterable by priority area, role, and text search.
  */
 export default function Partners({ data }) {
+  useDocumentTitle('Partner Directory');
   const rows = useMemo(() => {
     const out = [];
     for (const p of data.priorityAreas) {
