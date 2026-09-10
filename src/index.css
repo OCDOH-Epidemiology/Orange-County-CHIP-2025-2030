@@ -21,3 +21,17 @@ body {
   @apply sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50
          focus:bg-brand-blue focus:text-white focus:px-3 focus:py-2 focus:rounded;
 }
+
+/* Respect user preference for reduced motion.
+   WCAG 2.3.3 (Animation from Interactions) — AAA, but good practice for AA.
+   Prevents vestibular distress for users with motion sensitivity. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

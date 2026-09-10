@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
 import PriorityCard from '../components/PriorityCard.jsx';
+import { useDocumentTitle } from '../lib/useDocumentTitle.js';
 
 export default function Landing({ data }) {
+  useDocumentTitle('Overview');
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 sm:py-12">
       <section aria-labelledby="hero-title" className="mb-10">

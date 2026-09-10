@@ -6,10 +6,13 @@ import MilestoneList from '../components/MilestoneList.jsx';
 import PartnerList from '../components/PartnerList.jsx';
 import Disclosure from '../components/Disclosure.jsx';
 import { formatLongDate } from '../lib/format.js';
+import { useDocumentTitle } from '../lib/useDocumentTitle.js';
 
 export default function PriorityArea({ data }) {
   const { id } = useParams();
   const priority = data.priorityAreas.find((p) => p.id === id);
+
+  useDocumentTitle(priority?.priority || 'Priority Area Not Found');
 
   if (!priority) {
     return (

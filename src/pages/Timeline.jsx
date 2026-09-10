@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import Breadcrumbs from '../components/Breadcrumbs.jsx';
 import { formatLongDate, milestoneStatusLabel } from '../lib/format.js';
+import { useDocumentTitle } from '../lib/useDocumentTitle.js';
 
 /**
  * Cross-cutting timeline: every milestone from all priority areas, grouped by
@@ -16,6 +17,7 @@ const PALETTE = {
 };
 
 export default function Timeline({ data }) {
+  useDocumentTitle('Timeline');
   const priorityIndex = new Map(data.priorityAreas.map((p, i) => [p.id, i]));
 
   const items = data.priorityAreas.flatMap((p) =>

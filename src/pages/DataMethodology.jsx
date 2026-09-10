@@ -1,7 +1,9 @@
 import Breadcrumbs from '../components/Breadcrumbs.jsx';
 import Section from '../components/Section.jsx';
+import { useDocumentTitle } from '../lib/useDocumentTitle.js';
 
 export default function DataMethodology({ data }) {
+  useDocumentTitle('Data & Methodology');
   const uniqueSources = Array.from(
     new Set(data.priorityAreas.map((p) => p.objective.dataSource))
   );

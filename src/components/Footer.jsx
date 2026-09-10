@@ -1,4 +1,5 @@
 import { formatLongDate } from '../lib/format.js';
+import ExternalLink from './ExternalLink.jsx';
 
 export default function Footer({ meta }) {
   const lastUpdated = meta.lastUpdated ? formatLongDate(meta.lastUpdated) : '—';
@@ -24,14 +25,12 @@ export default function Footer({ meta }) {
             {meta.contact?.phone && <li>{meta.contact.phone}</li>}
             {meta.contact?.url && (
               <li>
-                <a
-                  className="underline decoration-slate-500 hover:decoration-white break-all"
+                <ExternalLink
                   href={meta.contact.url}
-                  target="_blank"
-                  rel="noreferrer"
+                  className="underline decoration-slate-500 hover:decoration-white break-all"
                 >
                   Reports &amp; Assessments
-                </a>
+                </ExternalLink>
               </li>
             )}
             {!meta.contact?.email && !meta.contact?.phone && !meta.contact?.url && (

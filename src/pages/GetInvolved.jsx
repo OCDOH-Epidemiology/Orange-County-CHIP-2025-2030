@@ -1,8 +1,11 @@
 import { Link } from 'react-router-dom';
 import Breadcrumbs from '../components/Breadcrumbs.jsx';
 import Section from '../components/Section.jsx';
+import ExternalLink from '../components/ExternalLink.jsx';
+import { useDocumentTitle } from '../lib/useDocumentTitle.js';
 
 export default function GetInvolved({ data }) {
+  useDocumentTitle('Get Involved');
   const contact = data.meta.contact || {};
 
   return (
@@ -96,9 +99,9 @@ export default function GetInvolved({ data }) {
             {contact.url && (
               <div>
                 Web:{' '}
-                <a className="text-brand-blue underline break-all" href={contact.url} target="_blank" rel="noreferrer">
+                <ExternalLink href={contact.url} className="text-brand-blue underline break-all">
                   {contact.url}
-                </a>
+                </ExternalLink>
               </div>
             )}
           </div>
