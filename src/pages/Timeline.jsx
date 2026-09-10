@@ -82,7 +82,7 @@ function MilestoneItem({ id, priority, milestone, colorIdx, revealIndex }) {
   return (
     <li
       ref={ref}
-      className={`pl-8 pr-2 py-3 relative timeline-milestone ${isVisible ? 'is-visible' : ''}`}
+      className={`timeline-row pl-8 pr-2 py-3 relative timeline-milestone ${isVisible ? 'is-visible' : ''}`}
       style={{ '--reveal-delay': revealIndex }}
     >
       <span

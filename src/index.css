@@ -143,6 +143,18 @@ body {
   animation-delay: calc(var(--reveal-delay, 0) * 60ms + 50ms);
 }
 
+/* --- Dot hover / focus-within pulse (after reveal) --- */
+@keyframes timeline-dot-hover-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+.timeline-row:hover .timeline-dot.is-visible,
+.timeline-dot.is-visible:hover,
+.timeline-row:focus-within .timeline-dot.is-visible {
+  animation: timeline-dot-hover-pulse 0.8s ease-in-out infinite;
+}
+
 /* --- Timeline rail draw: animated vertical line --- */
 @keyframes railDraw {
   from {
