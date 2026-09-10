@@ -92,6 +92,194 @@ body {
 }
 
 /* ==========================================================================
+   Scroll-driven storytelling animations for Timeline page.
+   Documentary-style vertical journey through 2026–2030.
+   ========================================================================== */
+
+/* --- Milestone reveal: slide in from left along the timeline rail --- */
+@keyframes milestoneReveal {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.timeline-milestone {
+  opacity: 0;
+  transform: translateX(-20px);
+}
+
+.timeline-milestone.is-visible {
+  animation: milestoneReveal 400ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation-delay: calc(var(--reveal-delay, 0) * 60ms);
+}
+
+/* --- Dot pulse: subtle scale when entering view --- */
+@keyframes dotPulse {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.timeline-dot {
+  opacity: 0;
+  transform: scale(0.6);
+}
+
+.timeline-dot.is-visible {
+  animation: dotPulse 450ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  animation-delay: calc(var(--reveal-delay, 0) * 60ms + 50ms);
+}
+
+/* --- Timeline rail draw: animated vertical line --- */
+@keyframes railDraw {
+  from {
+    height: 0;
+  }
+  to {
+    height: 100%;
+  }
+}
+
+.timeline-rail {
+  position: relative;
+}
+
+.timeline-rail::before {
+  content: '';
+  position: absolute;
+  left: 0.5rem;
+  top: 0.5rem;
+  bottom: 0.5rem;
+  width: 2px;
+  background: linear-gradient(to bottom, #e2e8f0, #cbd5e1);
+}
+
+/* Animated overlay that draws as you scroll */
+.timeline-rail-progress {
+  position: absolute;
+  left: 0.5rem;
+  top: 0.5rem;
+  width: 2px;
+  background: linear-gradient(to bottom, #1B4B8A, #2F855A);
+  height: 0;
+  transition: height 150ms ease-out;
+  z-index: 1;
+}
+
+/* --- Year chapter title: enhanced sticky header when active --- */
+.year-chapter {
+  transition: all 250ms ease-out;
+}
+
+.year-chapter.is-active {
+  background: linear-gradient(to right, rgba(27, 75, 138, 0.08), transparent);
+  border-color: #1B4B8A;
+  padding-left: 0.75rem;
+  margin-left: -0.75rem;
+}
+
+.year-chapter-text {
+  transition: transform 200ms ease-out, color 200ms ease-out;
+}
+
+.year-chapter.is-active .year-chapter-text {
+  transform: scale(1.02);
+  color: #1B4B8A;
+}
+
+/* --- Scroll progress indicator: thin bar with year ticks --- */
+.scroll-progress-container {
+  position: fixed;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  opacity: 0;
+  transition: opacity 300ms ease-out;
+  pointer-events: none;
+}
+
+.scroll-progress-container.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.scroll-progress-track {
+  width: 3px;
+  height: 120px;
+  background: rgba(148, 163, 184, 0.3);
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+}
+
+.scroll-progress-fill {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, #1B4B8A, #2F855A);
+  border-radius: 2px;
+  transition: height 100ms ease-out;
+}
+
+.scroll-progress-year {
+  font-size: 0.625rem;
+  font-weight: 600;
+  color: #64748b;
+  transition: color 200ms ease-out, transform 200ms ease-out;
+  cursor: pointer;
+}
+
+.scroll-progress-year:hover {
+  color: #1B4B8A;
+}
+
+.scroll-progress-year.is-active {
+  color: #1B4B8A;
+  transform: scale(1.1);
+}
+
+/* --- Mobile adjustments --- */
+@media (max-width: 768px) {
+  .scroll-progress-container {
+    right: 0.5rem;
+  }
+  
+  .scroll-progress-track {
+    height: 80px;
+  }
+  
+  .scroll-progress-year {
+    font-size: 0.5rem;
+  }
+}
+
+/* Hide progress indicator on very small screens */
+@media (max-width: 480px) {
+  .scroll-progress-container {
+    display: none;
+  }
+}
+
+/* ==========================================================================
    Accessibility: honor prefers-reduced-motion.
    WCAG 2.1 SC 2.3.3 (Animation from Interactions).
    ========================================================================== */
@@ -106,5 +294,26 @@ body {
   
   html {
     scroll-behavior: auto;
+  }
+
+  /* Ensure scroll-reveal content is visible immediately */
+  .timeline-milestone,
+  .timeline-dot {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  
+  .timeline-rail-progress {
+    display: none;
+  }
+  
+  .scroll-progress-container {
+    display: none;
+  }
+  
+  .year-chapter.is-active {
+    background: transparent;
+    padding-left: 0;
+    margin-left: 0;
   }
 }
