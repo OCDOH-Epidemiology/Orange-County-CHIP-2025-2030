@@ -1,8 +1,12 @@
 import { Link } from 'react-router-dom';
+import { useLanguage } from '../i18n/index.js';
 
 export default function Breadcrumbs({ items }) {
+  const { isSpanish } = useLanguage();
+  const ariaLabel = isSpanish ? 'Migas de pan' : 'Breadcrumb';
+  
   return (
-    <nav aria-label="Breadcrumb" className="mb-4 text-sm text-slate-600">
+    <nav aria-label={ariaLabel} className="mb-4 text-sm text-slate-600">
       <ol className="flex flex-wrap items-center gap-1">
         {items.map((item, i) => {
           const last = i === items.length - 1;

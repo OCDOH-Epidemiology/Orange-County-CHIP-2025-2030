@@ -19,7 +19,8 @@ file (`src/data/chip-data.json`) that is generated from an Excel workbook.
 3. [Running the site on your own computer](#running-the-site-on-your-own-computer)
 4. [Publishing the site to the web (GitHub Pages)](#publishing-the-site-to-the-web-github-pages)
 5. [Customizing the look](#customizing-the-look)
-6. [Troubleshooting](#troubleshooting)
+6. [Language support (English + Spanish)](#language-support-english--spanish)
+7. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -214,6 +215,101 @@ site rebuilds automatically.
   `meta.contact` block in `src/data/chip-data.json` directly). It appears in
   the footer and on the Get Involved page.
 - **Last updated date** — edit the `lastUpdated` key in the `Meta` sheet.
+
+---
+
+## Language support (English + Spanish)
+
+The dashboard supports **English** (default) and **Spanish**. Users can switch
+languages using the language toggle in the header or footer. The preference is
+saved in the browser's localStorage and persists across sessions.
+
+### How to switch languages
+
+- **Header**: Click the globe icon with "Español" (or "English" when in Spanish
+  mode) in the top navigation bar.
+- **Footer**: There's also a language toggle button at the bottom of every page.
+- **Automatic detection**: On first visit, the site checks the browser's
+  language preference. If Spanish is preferred, it starts in Spanish.
+
+### What gets translated
+
+1. **UI chrome**: Navigation, buttons, labels, empty states, filter dropdowns,
+   table headers, milestone statuses, progress bar labels, accessibility text
+   (skip link, screen reader announcements), and all static page content.
+
+2. **Priority area content**: Goals, strategies, objectives, disparities,
+   outcomes, and milestone descriptions are translated via a content map.
+
+3. **Document titles**: The browser tab title updates based on the selected
+   language (WCAG 2.4.2).
+
+4. **`<html lang>` attribute**: Automatically set to `en` or `es` when the
+   language changes (WCAG 3.1.1).
+
+### How to update Spanish translations
+
+**For UI text** (labels, buttons, static page copy):
+
+1. Open `src/i18n/locales/es.js`
+2. Find the key you want to update
+3. Change the Spanish text
+4. Save and rebuild
+
+**For priority area content** (goals, milestones, strategies):
+
+1. Open `src/i18n/content/priorityAreas.js`
+2. Find the priority area by its ID (e.g., `'nutrition-security'`)
+3. Update the Spanish text for that field
+4. For milestones, find the milestone by its ID within the priority
+
+### How to add a third language
+
+1. **Add the language code** to `src/i18n/LanguageContext.jsx`:
+
+   ```js
+   const SUPPORTED_LANGUAGES = ['en', 'es', 'fr']; // Add 'fr' for French
+   ```
+
+2. **Create a UI locale file**: Copy `src/i18n/locales/es.js` to
+   `src/i18n/locales/fr.js` and translate all strings. Update the `meta` block
+   with the new language info.
+
+3. **Add the locale to the hook**: In `src/i18n/useTranslation.js`:
+
+   ```js
+   import fr from './locales/fr.js';
+   const locales = { en, es, fr };
+   ```
+
+4. **Add content translations**: In `src/i18n/content/priorityAreas.js`, add a
+   `fr` object following the same structure as `es`, then add it to the
+   `contentTranslations` export:
+
+   ```js
+   export const contentTranslations = {
+     es,
+     fr, // Add new language here
+   };
+   ```
+
+5. **Update the language switcher**: If you want a three-way toggle instead of
+   a binary switch, modify `src/components/LanguageSwitcher.jsx` to show a
+   dropdown or list of all supported languages.
+
+### Architecture notes
+
+- **No external dependencies**: The i18n system is custom-built and lightweight.
+- **React Context**: Language state is managed via `LanguageProvider` wrapping
+  the app.
+- **Hooks**: `useTranslation()` for UI strings, `useContent()` for priority area
+  data, `useDateFormat()` for localized date formatting.
+- **Fallback**: Missing translations fall back to English automatically.
+- **Excel/JSON workflow**: The content translations in `priorityAreas.js` are
+  separate from `chip-data.json`. When you update the Excel workbook and
+  regenerate the JSON, the Spanish translations are applied at render time, not
+  baked into the JSON. This means you can update data in Excel without touching
+  the Spanish translation files.
 
 ---
 

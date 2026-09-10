@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
+import { useTranslation, useDateFormat } from '../i18n/index.js';
+import { useContent } from '../i18n/index.js';
 import Breadcrumbs from '../components/Breadcrumbs.jsx';
-import { formatLongDate, milestoneStatusLabel } from '../lib/format.js';
 import { useDocumentTitle } from '../lib/useDocumentTitle.js';
 
 /**
@@ -17,17 +18,26 @@ const PALETTE = {
 };
 
 export default function Timeline({ data }) {
-  useDocumentTitle('Timeline');
+  const { t } = useTranslation();
+  const { formatLongDate } = useDateFormat();
+  const { getTranslatedPriority, translateMilestone } = useContent();
+  
+  useDocumentTitle(t('titles.timeline'));
+  
   const priorityIndex = new Map(data.priorityAreas.map((p, i) => [p.id, i]));
 
-  const items = data.priorityAreas.flatMap((p) =>
-    p.milestones.map((m) => ({
+  const items = data.priorityAreas.flatMap((p) => {
+    const translatedPriority = getTranslatedPriority(p);
+    return p.milestones.map((m) => ({
       id: `${p.id}::${m.id}`,
-      priority: p,
-      milestone: m,
+      priority: translatedPriority,
+      milestone: {
+        ...m,
+        description: translateMilestone(p.id, m.id, m.description),
+      },
       colorIdx: priorityIndex.get(p.id) % Object.keys(PALETTE).length,
-    }))
-  );
+    }));
+  });
   items.sort((a, b) => a.milestone.targetDate.localeCompare(b.milestone.targetDate));
 
   const byYear = new Map();
@@ -41,22 +51,24 @@ export default function Timeline({ data }) {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
-      <Breadcrumbs items={[{ label: 'Overview', to: '/' }, { label: 'Timeline' }]} />
-      <h1 className="text-3xl font-bold text-slate-900">Timeline: 2026 – 2030</h1>
+      <Breadcrumbs items={[
+        { label: t('breadcrumbs.overview'), to: '/' }, 
+        { label: t('breadcrumbs.timeline') }
+      ]} />
+      <h1 className="text-3xl font-bold text-slate-900">{t('timeline.title')}</h1>
       <p className="mt-2 text-slate-700 max-w-3xl">
-        Every milestone across the three Community Health Improvement Plan
-        priority areas, in the order it is scheduled to be completed. Colored
-        dots identify which priority area a milestone belongs to.
+        {t('timeline.intro')}
       </p>
 
-      <ul aria-label="Priority area legend" className="mt-6 flex flex-wrap gap-4">
+      <ul aria-label={t('timeline.legendLabel')} className="mt-6 flex flex-wrap gap-4">
         {data.priorityAreas.map((p, i) => {
           const c = PALETTE[i % Object.keys(PALETTE).length];
+          const translatedPriority = getTranslatedPriority(p);
           return (
             <li key={p.id} className="flex items-center gap-2">
               <span className={`inline-block w-3 h-3 rounded-full ${c.dot}`} aria-hidden="true" />
               <Link to={`/priority/${p.id}`} className={`text-sm font-medium ${c.text} hover:underline`}>
-                {p.priority}
+                {translatedPriority.priority}
               </Link>
             </li>
           );
@@ -89,7 +101,7 @@ export default function Timeline({ data }) {
                         {priority.priority}
                       </Link>
                       <span className="text-xs text-slate-500">
-                        {milestoneStatusLabel(milestone.status)}
+                        {t(`milestones.status.${milestone.status}`)}
                       </span>
                     </div>
                     <p className="mt-1 text-slate-800">{milestone.description}</p>

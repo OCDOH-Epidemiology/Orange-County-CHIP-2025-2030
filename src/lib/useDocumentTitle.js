@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
-
-const BASE_TITLE = 'Orange County CHIP Dashboard';
+import { useTranslation } from '../i18n/index.js';
 
 /**
  * Custom hook to update document title and manage focus on route changes.
@@ -15,11 +14,13 @@ const BASE_TITLE = 'Orange County CHIP Dashboard';
 export function useDocumentTitle(title) {
   const location = useLocation();
   const previousPath = useRef(location.pathname);
+  const { t, language } = useTranslation();
 
   useEffect(() => {
-    const fullTitle = title ? `${title} | ${BASE_TITLE}` : BASE_TITLE;
+    const baseTitle = t('titles.baseTitle');
+    const fullTitle = title ? `${title} | ${baseTitle}` : baseTitle;
     document.title = fullTitle;
-  }, [title]);
+  }, [title, t, language]);
 
   useEffect(() => {
     if (previousPath.current !== location.pathname) {
@@ -31,4 +32,12 @@ export function useDocumentTitle(title) {
       }
     }
   }, [location.pathname]);
+}
+
+/**
+ * Hook that returns the translated base title for use in other contexts.
+ */
+export function useBaseTitle() {
+  const { t } = useTranslation();
+  return t('titles.baseTitle');
 }

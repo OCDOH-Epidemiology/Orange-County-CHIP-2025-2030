@@ -1,20 +1,25 @@
 import { NavLink, Link } from 'react-router-dom';
 import { useState } from 'react';
+import { useTranslation } from '../i18n/index.js';
+import LanguageSwitcher, { LanguageSwitcherCompact } from './LanguageSwitcher.jsx';
 
 /**
  * Site header: county seal placeholder + department name + primary navigation.
  * Fully keyboard-navigable with a mobile disclosure menu.
+ * Includes language switcher for bilingual support.
  */
-const NAV = [
-  { to: '/', label: 'Overview', end: true },
-  { to: '/timeline', label: 'Timeline' },
-  { to: '/partners', label: 'Partners' },
-  { to: '/methodology', label: 'Data & Methodology' },
-  { to: '/get-involved', label: 'Get Involved' },
-];
 
 export default function Header({ meta }) {
   const [open, setOpen] = useState(false);
+  const { t } = useTranslation();
+
+  const NAV = [
+    { to: '/', label: t('nav.overview'), end: true },
+    { to: '/timeline', label: t('nav.timeline') },
+    { to: '/partners', label: t('nav.partners') },
+    { to: '/methodology', label: t('nav.dataMethodology') },
+    { to: '/get-involved', label: t('nav.getInvolved') },
+  ];
 
   return (
     <header className="bg-brand-blue text-white shadow">
@@ -30,7 +35,6 @@ export default function Header({ meta }) {
             aria-hidden="true"
             className="h-12 w-12 bg-white rounded-full ring-2 ring-white/40 object-contain shrink-0"
             onError={(e) => {
-              // Fallback: hide broken image (placeholder logo).
               e.currentTarget.style.visibility = 'hidden';
             }}
           />
@@ -44,6 +48,12 @@ export default function Header({ meta }) {
           </div>
         </Link>
 
+        {/* Language switcher - compact on mobile */}
+        <LanguageSwitcherCompact className="md:hidden" />
+        
+        {/* Language switcher - full on desktop */}
+        <LanguageSwitcher variant="header" className="hidden md:inline-flex" />
+
         <button
           type="button"
           aria-expanded={open}
@@ -51,7 +61,7 @@ export default function Header({ meta }) {
           onClick={() => setOpen((o) => !o)}
           className="md:hidden inline-flex items-center justify-center rounded p-2 hover:bg-white/10"
         >
-          <span className="sr-only">Toggle navigation</span>
+          <span className="sr-only">{t('nav.toggleMenu')}</span>
           <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
             {open ? (
               <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />

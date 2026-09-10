@@ -1,84 +1,84 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from '../i18n/index.js';
+import { useContent } from '../i18n/index.js';
 import PriorityCard from '../components/PriorityCard.jsx';
 import { useDocumentTitle } from '../lib/useDocumentTitle.js';
 
 export default function Landing({ data }) {
-  useDocumentTitle('Overview');
+  const { t } = useTranslation();
+  const { getTranslatedPriority } = useContent();
+  
+  useDocumentTitle(t('titles.overview'));
+  
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 sm:py-12">
       <section aria-labelledby="hero-title" className="mb-10">
         <div className="text-xs font-semibold uppercase tracking-wide text-brand-blue">
-          Community Health Improvement Plan • 2025–2030
+          {t('landing.tagline')}
         </div>
         <h1
           id="hero-title"
           className="mt-2 text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight"
         >
-          Tracking Orange County's public health priorities.
+          {t('landing.title')}
         </h1>
         <p className="mt-4 max-w-3xl text-lg text-slate-700">
-          A Community Health Improvement Plan is a five-year, public roadmap
-          for improving the health of a community. It identifies the most
-          pressing health needs, sets measurable goals, and names the partners
-          doing the work. This dashboard shows what Orange County is working on
-          and how it is going.
+          {t('landing.intro')}
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
           <Link
             to="/methodology"
             className="inline-flex items-center gap-1 rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50"
           >
-            How the data works
+            {t('landing.howDataWorks')}
           </Link>
           <Link
             to="/get-involved"
             className="inline-flex items-center gap-1 rounded-md bg-brand-blue px-4 py-2 text-sm font-medium text-white hover:bg-brand-blueDark"
           >
-            Get involved →
+            {t('landing.getInvolved')} →
           </Link>
         </div>
       </section>
 
       <section aria-labelledby="priorities-title">
         <h2 id="priorities-title" className="text-2xl font-semibold text-slate-900 mb-4">
-          The three priority areas
+          {t('landing.priorityAreasTitle')}
         </h2>
         <p className="text-slate-700 mb-6 max-w-3xl">
-          Each priority area addresses a specific health disparity in Orange
-          County. Click any card for milestones, partners, and the strategy
-          being used.
+          {t('landing.priorityAreasIntro')}
         </p>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {data.priorityAreas.map((p) => (
-            <PriorityCard key={p.id} priority={p} />
+            <PriorityCard key={p.id} priority={getTranslatedPriority(p)} />
           ))}
         </div>
       </section>
 
       <section aria-labelledby="ataglance-title" className="mt-12">
         <h2 id="ataglance-title" className="text-2xl font-semibold text-slate-900 mb-4">
-          Explore the plan
+          {t('landing.exploreTitle')}
         </h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <LinkTile
             to="/timeline"
-            title="Timeline"
-            body="See every milestone from 2026 through 2030 on one chronological view."
+            title={t('landing.tiles.timeline.title')}
+            body={t('landing.tiles.timeline.body')}
           />
           <LinkTile
             to="/partners"
-            title="Partner directory"
-            body="All lead and advisory partners across the three priority areas."
+            title={t('landing.tiles.partners.title')}
+            body={t('landing.tiles.partners.body')}
           />
           <LinkTile
             to="/methodology"
-            title="Data & methodology"
-            body="Data sources, survey years, and what the numbers actually mean."
+            title={t('landing.tiles.methodology.title')}
+            body={t('landing.tiles.methodology.body')}
           />
           <LinkTile
             to="/get-involved"
-            title="Get involved"
-            body="How residents and organizations can join a workgroup or share feedback."
+            title={t('landing.tiles.getInvolved.title')}
+            body={t('landing.tiles.getInvolved.body')}
           />
         </div>
       </section>

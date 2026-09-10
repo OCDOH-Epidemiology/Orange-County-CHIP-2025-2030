@@ -1,104 +1,98 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from '../i18n/index.js';
+import { useContent } from '../i18n/index.js';
 import Breadcrumbs from '../components/Breadcrumbs.jsx';
 import Section from '../components/Section.jsx';
 import ExternalLink from '../components/ExternalLink.jsx';
 import { useDocumentTitle } from '../lib/useDocumentTitle.js';
 
 export default function GetInvolved({ data }) {
-  useDocumentTitle('Get Involved');
+  const { t, tArray } = useTranslation();
+  const { getTranslatedPriority } = useContent();
+  
+  useDocumentTitle(t('titles.getInvolved'));
+  
   const contact = data.meta.contact || {};
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
-      <Breadcrumbs items={[{ label: 'Overview', to: '/' }, { label: 'Get Involved' }]} />
-      <h1 className="text-3xl font-bold text-slate-900">Get involved</h1>
+      <Breadcrumbs items={[
+        { label: t('breadcrumbs.overview'), to: '/' }, 
+        { label: t('breadcrumbs.getInvolved') }
+      ]} />
+      <h1 className="text-3xl font-bold text-slate-900">{t('getInvolved.title')}</h1>
       <p className="mt-2 text-lg text-slate-700 max-w-3xl">
-        Orange County's health improves when residents, workers, and
-        organizations partner with the health department. Here are three ways
-        you can help move the Community Health Improvement Plan forward.
+        {t('getInvolved.intro')}
       </p>
 
       <div className="mt-6 space-y-6">
-        <Section title="Join a priority-area workgroup">
+        <Section title={t('getInvolved.sections.joinWorkgroup.title')}>
           <p>
-            Each priority area has a workgroup led by the Orange County
-            Department of Health that meets monthly or quarterly. Workgroups
-            plan events, review data, and coordinate partner activity. Anyone
-            with lived experience, professional expertise, or community reach
-            in these topics is welcome to participate.
+            {t('getInvolved.sections.joinWorkgroup.content')}
           </p>
           <ul className="mt-4 grid gap-3 sm:grid-cols-3">
-            {data.priorityAreas.map((p) => (
-              <li key={p.id}>
-                <Link
-                  to={`/priority/${p.id}`}
-                  className="block h-full rounded-md border border-slate-200 bg-white p-4 hover:shadow-sm"
-                >
-                  <div className="text-xs font-semibold uppercase tracking-wide text-brand-blue">
-                    {p.domain}
-                  </div>
-                  <div className="mt-1 font-semibold text-slate-900">{p.priority}</div>
-                  <div className="mt-1 text-sm text-slate-700">{p.goal}</div>
-                </Link>
-              </li>
-            ))}
+            {data.priorityAreas.map((p) => {
+              const translatedPriority = getTranslatedPriority(p);
+              return (
+                <li key={p.id}>
+                  <Link
+                    to={`/priority/${p.id}`}
+                    className="block h-full rounded-md border border-slate-200 bg-white p-4 hover:shadow-sm"
+                  >
+                    <div className="text-xs font-semibold uppercase tracking-wide text-brand-blue">
+                      {translatedPriority.domain}
+                    </div>
+                    <div className="mt-1 font-semibold text-slate-900">{translatedPriority.priority}</div>
+                    <div className="mt-1 text-sm text-slate-700">{translatedPriority.goal}</div>
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         </Section>
 
-        <Section title="Share your experience">
-          <p>
-            The Community Health Improvement Plan was built on more than 2,200
-            resident voices through the Orange County Community Health Survey,
-            focus groups with underrepresented community members, and key
-            informant interviews. The Orange County Department of Health
-            continues to collect community input year-round.
-          </p>
-          <p className="mt-3">
-            If you'd like to share your experience with food security, mental
-            health, or preventive care access in Orange County, reach out
-            through the contact information below.
-          </p>
+        <Section title={t('getInvolved.sections.shareExperience.title')}>
+          {tArray('getInvolved.sections.shareExperience.content').map((paragraph, i) => (
+            <p key={i} className={i > 0 ? 'mt-3' : ''}>
+              {paragraph}
+            </p>
+          ))}
         </Section>
 
-        <Section title="Attend a public update">
+        <Section title={t('getInvolved.sections.attendUpdate.title')}>
           <p>
-            Progress on the Community Health Improvement Plan is shared
-            publicly at:
+            {t('getInvolved.sections.attendUpdate.intro')}
           </p>
           <ul className="list-disc pl-5 mt-3 space-y-1">
             <li>
-              <strong>Annual Mini-Summits</strong> — priority-specific updates,
-              one per priority area each year.
+              <MarkdownText text={t('getInvolved.sections.attendUpdate.events.miniSummits')} />
             </li>
             <li>
-              <strong>Orange County Health Summit</strong> — a biennial
-              gathering starting in 2027 with all three workgroups and the
-              Steering Committee.
+              <MarkdownText text={t('getInvolved.sections.attendUpdate.events.healthSummit')} />
             </li>
             <li>
-              <strong>Steering Committee meetings</strong> — quarterly
-              starting fall 2026.
+              <MarkdownText text={t('getInvolved.sections.attendUpdate.events.steeringCommittee')} />
             </li>
           </ul>
         </Section>
 
-        <Section title="Contact the Community Health Improvement Plan team">
+        <Section title={t('getInvolved.sections.contact.title')}>
           <div className="text-slate-800 space-y-1">
             <div className="font-semibold">{data.meta.publishedBy}</div>
             {contact.email ? (
               <div>
-                Email:{' '}
+                {t('getInvolved.sections.contact.email')}{' '}
                 <a className="text-brand-blue underline" href={`mailto:${contact.email}`}>
                   {contact.email}
                 </a>
               </div>
             ) : (
-              <div className="text-slate-500 italic">Email to be added</div>
+              <div className="text-slate-500 italic">{t('getInvolved.sections.contact.emailToBeAdded')}</div>
             )}
-            {contact.phone ? <div>Phone: {contact.phone}</div> : null}
+            {contact.phone ? <div>{t('getInvolved.sections.contact.phone')} {contact.phone}</div> : null}
             {contact.url && (
               <div>
-                Web:{' '}
+                {t('getInvolved.sections.contact.web')}{' '}
                 <ExternalLink href={contact.url} className="text-brand-blue underline break-all">
                   {contact.url}
                 </ExternalLink>
@@ -108,5 +102,24 @@ export default function GetInvolved({ data }) {
         </Section>
       </div>
     </div>
+  );
+}
+
+/**
+ * Simple component to render **bold** markdown syntax.
+ */
+function MarkdownText({ text }) {
+  if (!text) return null;
+  
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  return (
+    <>
+      {parts.map((part, i) => {
+        if (part.startsWith('**') && part.endsWith('**')) {
+          return <strong key={i}>{part.slice(2, -2)}</strong>;
+        }
+        return part;
+      })}
+    </>
   );
 }

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from '../i18n/index.js';
 import ProgressBar from './ProgressBar.jsx';
 
 /**
@@ -6,11 +7,13 @@ import ProgressBar from './ProgressBar.jsx';
  * The whole card is a clickable region (a large link).
  */
 export default function PriorityCard({ priority }) {
+  const { t } = useTranslation();
+  
   return (
     <Link
       to={`/priority/${priority.id}`}
       className="group bg-white rounded-lg shadow-sm border border-slate-200 hover:shadow-md hover:border-brand-blue/40 transition-all overflow-hidden flex flex-col focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue focus-visible:ring-offset-2"
-      aria-label={`See full details for ${priority.priority}`}
+      aria-label={t('priorityCard.ariaLabel', { priority: priority.priority })}
     >
       <div className="bg-brand-blueLight px-5 py-3 border-b border-slate-200">
         <div className="text-xs font-semibold uppercase tracking-wide text-brand-blueDark">
@@ -23,15 +26,15 @@ export default function PriorityCard({ priority }) {
 
       <div className="p-5 flex-1 flex flex-col gap-4">
         <div>
-          <div className="text-sm font-semibold text-slate-700">Goal</div>
+          <div className="text-sm font-semibold text-slate-700">{t('priorityCard.goal')}</div>
           <p className="text-slate-800">{priority.goal}</p>
         </div>
 
-        <ProgressBar objective={priority.objective} />
+        <ProgressBar objective={priority.objective} priorityId={priority.id} />
 
         <div className="mt-auto pt-2">
           <span className="inline-flex items-center gap-1 text-brand-blue font-medium group-hover:underline">
-            See full details
+            {t('priorityCard.seeFullDetails')}
             <span aria-hidden="true">→</span>
           </span>
         </div>

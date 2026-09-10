@@ -1,4 +1,4 @@
-import { formatLongDate, milestoneStatusLabel } from '../lib/format.js';
+import { useTranslation, useDateFormat } from '../i18n/index.js';
 
 /**
  * Milestone checklist. Uses BOTH color AND icon+text to distinguish state,
@@ -33,14 +33,20 @@ const STATE = {
   },
 };
 
-export default function MilestoneList({ milestones }) {
+export default function MilestoneList({ milestones, priorityId }) {
+  const { t } = useTranslation();
+  const { formatLongDate } = useDateFormat();
+
   if (!milestones || milestones.length === 0) {
-    return <p className="text-slate-500 italic">No milestones defined yet.</p>;
+    return <p className="text-slate-500 italic">{t('milestones.noMilestones')}</p>;
   }
+  
   return (
     <ol className="space-y-3">
       {milestones.map((m) => {
         const s = STATE[m.status] ?? STATE.not_started;
+        const statusLabel = t(`milestones.status.${m.status}`) || t('milestones.status.unknown');
+        
         return (
           <li
             key={m.id}
@@ -55,21 +61,23 @@ export default function MilestoneList({ milestones }) {
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                 <div className={`text-xs font-semibold uppercase tracking-wide ${s.text}`}>
-                  {milestoneStatusLabel(m.status)}
+                  {statusLabel}
                 </div>
                 <div className="text-sm text-slate-600">
-                  Target: {formatLongDate(m.targetDate)}
+                  {t('milestones.target')} {formatLongDate(m.targetDate)}
                 </div>
-                <div className="text-xs text-slate-500">Reports {m.frequency.toLowerCase()}</div>
+                <div className="text-xs text-slate-500">
+                  {t('milestones.reports', { frequency: m.frequency.toLowerCase() })}
+                </div>
               </div>
               <p className="mt-1 text-slate-800">{m.description}</p>
               <dl className="mt-2 grid gap-x-4 gap-y-1 text-xs text-slate-600 sm:grid-cols-2">
                 <div>
-                  <dt className="inline font-semibold">Baseline:</dt>{' '}
+                  <dt className="inline font-semibold">{t('milestones.baseline')}</dt>{' '}
                   <dd className="inline">{m.baseline || '—'}</dd>
                 </div>
                 <div>
-                  <dt className="inline font-semibold">Source:</dt>{' '}
+                  <dt className="inline font-semibold">{t('milestones.source')}</dt>{' '}
                   <dd className="inline">{m.dataSource}</dd>
                 </div>
               </dl>
