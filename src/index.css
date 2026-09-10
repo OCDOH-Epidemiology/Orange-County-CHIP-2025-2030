@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base document defaults. */
+html {
+  scroll-behavior: smooth;
+}
+body {
+  @apply bg-slate-50 text-slate-900 font-sans antialiased;
+}
+
+/* Consistent, highly-visible focus ring for keyboard navigation.
+   WCAG 2.1 SC 2.4.7 (focus visible). Applied to every interactive element. */
+:focus-visible {
+  @apply outline-none ring-2 ring-brand-blue ring-offset-2 ring-offset-slate-50;
+}
+
+/* Skip link — appears on tab press so keyboard users can jump to <main>. */
+.skip-link {
+  @apply sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50
+         focus:bg-brand-blue focus:text-white focus:px-3 focus:py-2 focus:rounded;
+}

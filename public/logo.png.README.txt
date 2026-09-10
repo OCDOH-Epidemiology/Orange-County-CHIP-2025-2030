@@ -1,0 +1,6 @@
+Replace `public/logo.png` with the Orange County seal (or another appropriate
+logo) at approximately 128x128px, PNG with a transparent background.
+
+The current file is a placeholder generated at project setup time. If it is
+missing or broken, the header falls back gracefully (the image simply hides
+itself and the text next to it remains).

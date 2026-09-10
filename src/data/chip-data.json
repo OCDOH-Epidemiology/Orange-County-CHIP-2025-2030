@@ -1,0 +1,544 @@
+{
+  "meta": {
+    "county": "Orange County, NY",
+    "plan": "2025–2030 Community Health Improvement Plan",
+    "publishedBy": "Orange County Department of Health",
+    "lastUpdated": "2026-06-30",
+    "version": "1.0.0",
+    "contact": {
+      "email": "",
+      "phone": "",
+      "url": "https://www.orangecountygov.com/2325/Reports-Assessments"
+    },
+    "notes": "activityStatus values on partners (e.g. 'active', 'engaged', 'named_only') are intentionally free-form strings. The dashboard displays whatever is written here — no code interprets what 'active' means. The Orange County Department of Health will define partner engagement criteria later."
+  },
+  "priorityAreas": [
+    {
+      "id": "nutrition-security",
+      "domain": "Economic Stability",
+      "priority": "Nutrition Security",
+      "goal": "Increase Food Security",
+      "disparityAddressed": "Individuals with low socioeconomic status",
+      "timeframe": {
+        "start": "2026-07-01",
+        "end": "2030-12-31"
+      },
+      "evidenceBasedStrategy": "Conduct standardized screening of unmet nutritional security needs and provide referrals to state, local, and federal benefit programs and community-based health-related social needs providers to address unmet needs.",
+      "objective": {
+        "number": "3.1",
+        "description": "By December 31, 2030, increase food security among adults who make less than $25,000 by 5% from 78% to 81.9%.",
+        "metric": "Food security among adults earning less than $25,000",
+        "unit": "percent",
+        "baseline": {
+          "value": 78,
+          "year": 2024
+        },
+        "target": {
+          "value": 81.9,
+          "year": 2030
+        },
+        "currentValue": null,
+        "dataSource": "Orange County Community Health Survey, 2024",
+        "reportingFrequency": "Every 3 years",
+        "stateComparison": {
+          "value": 51.1,
+          "label": "New York State Department of Health Prevention Agenda (State-Level)"
+        }
+      },
+      "evaluationMeasures": [
+        "# of community-based organizations conducting screenings and facilitation of referrals to benefit programs"
+      ],
+      "outcome": "Increased number of food insecure residents connected to resources",
+      "milestones": [
+        {
+          "id": "3.1-m1",
+          "description": "Establish a baseline of community-based organizations currently screening for food security with the Orange County Food Security and Healthy Eating Workgroup.",
+          "targetDate": "2026-12-31",
+          "baseline": "None",
+          "dataSource": "Community Health Improvement Plan evaluation database",
+          "frequency": "Once",
+          "status": "not_started"
+        },
+        {
+          "id": "3.1-m2",
+          "description": "Increase the number of community-based organizations that conduct standardized food security screening and referrals by 5 facilities.",
+          "targetDate": "2027-12-31",
+          "baseline": "To be determined December 31, 2026",
+          "dataSource": "Community Health Improvement Plan evaluation database",
+          "frequency": "Quarterly",
+          "status": "not_started"
+        }
+      ],
+      "partners": [
+        {
+          "name": "Orange County Department of Health",
+          "shortName": null,
+          "role": "lead",
+          "activityStatus": "named_only",
+          "lastActivityDate": null,
+          "notes": null
+        },
+        {
+          "name": "Bon Secours Community Hospital",
+          "shortName": null,
+          "role": "lead",
+          "activityStatus": "named_only",
+          "lastActivityDate": null,
+          "notes": null
+        },
+        {
+          "name": "Garnet Health",
+          "shortName": null,
+          "role": "lead",
+          "activityStatus": "named_only",
+          "lastActivityDate": null,
+          "notes": null
+        },
+        {
+          "name": "St. Anthony Community Hospital",
+          "shortName": null,
+          "role": "lead",
+          "activityStatus": "named_only",
+          "lastActivityDate": null,
+          "notes": null
+        },
+        {
+          "name": "Orange County Food Security and Healthy Eating Workgroup",
+          "shortName": null,
+          "role": "lead",
+          "activityStatus": "named_only",
+          "lastActivityDate": null,
+          "notes": null
+        },
+        {
+          "name": "Orange County Community Health Improvement Plan Steering Committee",
+          "shortName": null,
+          "role": "advisory",
+          "activityStatus": "named_only",
+          "lastActivityDate": null,
+          "notes": null
+        },
+        {
+          "name": "Cornell Cooperative Extension",
+          "shortName": null,
+          "role": "advisory",
+          "activityStatus": "named_only",
+          "lastActivityDate": null,
+          "notes": null
+        },
+        {
+          "name": "Cornerstone",
+          "shortName": null,
+          "role": "advisory",
+          "activityStatus": "named_only",
+          "lastActivityDate": null,
+          "notes": null
+        },
+        {
+          "name": "SUNY Orange",
+          "shortName": null,
+          "role": "advisory",
+          "activityStatus": "named_only",
+          "lastActivityDate": null,
+          "notes": null
+        },
+        {
+          "name": "Orange County Office for the Aging",
+          "shortName": null,
+          "role": "advisory",
+          "activityStatus": "named_only",
+          "lastActivityDate": null,
+          "notes": null
+        },
+        {
+          "name": "Orange County Department of Social Services",
+          "shortName": null,
+          "role": "advisory",
+          "activityStatus": "named_only",
+          "lastActivityDate": null,
+          "notes": null
+        },
+        {
+          "name": "Sun River Health",
+          "shortName": null,
+          "role": "advisory",
+          "activityStatus": "named_only",
+          "lastActivityDate": null,
+          "notes": null
+        },
+        {
+          "name": "Head Start",
+          "shortName": null,
+          "role": "advisory",
+          "activityStatus": "named_only",
+          "lastActivityDate": null,
+          "notes": null
+        },
+        {
+          "name": "Enlarged City of Newburgh School District",
+          "shortName": null,
+          "role": "advisory",
+          "activityStatus": "named_only",
+          "lastActivityDate": null,
+          "notes": null
+        },
+        {
+          "name": "United Way of Orange County",
+          "shortName": null,
+          "role": "advisory",
+          "activityStatus": "named_only",
+          "lastActivityDate": null,
+          "notes": null
+        },
+        {
+          "name": "Local food pantries",
+          "shortName": null,
+          "role": "advisory",
+          "activityStatus": "named_only",
+          "lastActivityDate": null,
+          "notes": null
+        },
+        {
+          "name": "Wellness Inspiring Spiritual Health",
+          "shortName": null,
+          "role": "advisory",
+          "activityStatus": "named_only",
+          "lastActivityDate": null,
+          "notes": null
+        }
+      ]
+    },
+    {
+      "id": "anxiety-stress",
+      "domain": "Social & Community Context",
+      "priority": "Anxiety and Stress",
+      "goal": "Decrease anxiety and stress",
+      "disparityAddressed": "Individuals with low socioeconomic status",
+      "timeframe": {
+        "start": "2026-09-01",
+        "end": "2030-12-31"
+      },
+      "evidenceBasedStrategy": "Promote and increase awareness of evidence-based mindfulness resources to reduce the negative impact of stress and trauma.",
+      "objective": {
+        "number": "5.1",
+        "description": "By December 31, 2030, decrease the percentage of adults in households with an annual income of less than $25,000 who experience moderate or severe mental distress by 5% from 47% to 44%.",
+        "metric": "Adults earning less than $25,000 with moderate or severe mental distress",
+        "unit": "percent",
+        "baseline": {
+          "value": 47,
+          "year": 2024
+        },
+        "target": {
+          "value": 44,
+          "year": 2030
+        },
+        "currentValue": null,
+        "dataSource": "Orange County Community Health Survey, 2024",
+        "reportingFrequency": "Yearly",
+        "stateComparison": {
+          "value": 18.9,
+          "label": "New York State Department of Health Prevention Agenda goal by 2030"
+        }
+      },
+      "evaluationMeasures": [
+        "# of staff trained through Office of Addiction Services and Supports–sponsored Breath, Body, Mind Foundation",
+        "# of outreach events attended to promote Breath, Body, Mind",
+        "# of participants trained"
+      ],
+      "outcome": "Increased number of residents with tools to reduce stress and anxiety",
+      "milestones": [
+        {
+          "id": "5.1-m1",
+          "description": "Train at least one Orange County Department of Health Sr. Public Health Educator in the Office of Addiction Services and Supports–sponsored Breath, Body, Mind techniques.",
+          "targetDate": "2026-12-31",
+          "baseline": "Zero",
+          "dataSource": "Community Health Improvement Plan evaluation database",
+          "frequency": "Once",
+          "status": "not_started"
+        },
+        {
+          "id": "5.1-m2",
+          "description": "Develop an outreach plan to identify outreach opportunities to work with the population of focus.",
+          "targetDate": "2026-12-31",
+          "baseline": "N/A",
+          "dataSource": "Community Health Improvement Plan evaluation database",
+          "frequency": "Once",
+          "status": "not_started"
+        },
+        {
+          "id": "5.1-m3",
+          "description": "Provide at least 2 trainings to the population of focus.",
+          "targetDate": "2027-12-31",
+          "baseline": "Zero",
+          "dataSource": "Community Health Improvement Plan evaluation database",
+          "frequency": "Quarterly",
+          "status": "not_started"
+        }
+      ],
+      "partners": [
+        {
+          "name": "Orange County Department of Health",
+          "shortName": null,
+          "role": "lead",
+          "activityStatus": "named_only",
+          "lastActivityDate": null,
+          "notes": null
+        },
+        {
+          "name": "Montefiore St. Luke's Cornwall Hospital",
+          "shortName": null,
+          "role": "lead",
+          "activityStatus": "named_only",
+          "lastActivityDate": null,
+          "notes": null
+        },
+        {
+          "name": "Orange County Community Health Improvement Plan Steering Committee",
+          "shortName": null,
+          "role": "advisory",
+          "activityStatus": "named_only",
+          "lastActivityDate": null,
+          "notes": null
+        },
+        {
+          "name": "Orange County Department of Mental Health",
+          "shortName": null,
+          "role": "advisory",
+          "activityStatus": "named_only",
+          "lastActivityDate": null,
+          "notes": null
+        },
+        {
+          "name": "Changing the Ecosystem Taskforce",
+          "shortName": null,
+          "role": "advisory",
+          "activityStatus": "named_only",
+          "lastActivityDate": null,
+          "notes": null
+        },
+        {
+          "name": "New York State Office of Addiction Services and Supports",
+          "shortName": null,
+          "role": "advisory",
+          "activityStatus": "named_only",
+          "lastActivityDate": null,
+          "notes": null
+        },
+        {
+          "name": "Breath, Body, Mind Foundation",
+          "shortName": null,
+          "role": "advisory",
+          "activityStatus": "named_only",
+          "lastActivityDate": null,
+          "notes": null
+        },
+        {
+          "name": "Wellness Inspiring Spiritual Health",
+          "shortName": null,
+          "role": "advisory",
+          "activityStatus": "named_only",
+          "lastActivityDate": null,
+          "notes": null
+        }
+      ]
+    },
+    {
+      "id": "crc-screening",
+      "domain": "Health Care Access & Quality",
+      "priority": "Preventive Services for Chronic Disease Prevention and Control",
+      "goal": "Increase Colorectal Cancer Screening",
+      "disparityAddressed": "Under-insured and uninsured individuals",
+      "timeframe": {
+        "start": "2027-01-01",
+        "end": "2030-12-31"
+      },
+      "evidenceBasedStrategy": "Work with the New York State Cancer Screening Program to improve access to cancer screening and diagnostic testing for individuals who are under-insured or without health insurance.",
+      "objective": {
+        "number": "33.0",
+        "description": "By December 31, 2030, increase the percentage of adults ages 45–75 who receive a colorectal cancer screening based on the most recent guidance by 5% from 75.1% to 78.8%.",
+        "metric": "Adults 45–75 up to date on colorectal cancer screening",
+        "unit": "percent",
+        "baseline": {
+          "value": 75.1,
+          "year": 2024
+        },
+        "target": {
+          "value": 78.8,
+          "year": 2030
+        },
+        "currentValue": null,
+        "dataSource": "New York State Behavioral Risk Factor Surveillance Survey, 2024",
+        "reportingFrequency": "Every 4 years",
+        "stateComparison": {
+          "value": 83.5,
+          "label": "New York State Department of Health Prevention Agenda goal by 2030"
+        }
+      },
+      "evaluationMeasures": [
+        "# of screening events",
+        "# of individuals screened",
+        "# of additional providers enrolled in the Cancer Services Program of the Hudson Valley"
+      ],
+      "outcome": "Increased number of adults able to receive colorectal cancer screenings",
+      "milestones": [
+        {
+          "id": "33.0-m1",
+          "description": "Provide at least 3 screening events with opportunities to receive colorectal screenings or test kits.",
+          "targetDate": "2027-12-31",
+          "baseline": "Zero",
+          "dataSource": "Community Health Improvement Plan evaluation database",
+          "frequency": "Quarterly",
+          "status": "not_started"
+        },
+        {
+          "id": "33.0-m2",
+          "description": "Increase the average number of attendees at screening events from 200 to 250.",
+          "targetDate": "2027-12-31",
+          "baseline": "200 (3-year average 2024–YTD 2026)",
+          "dataSource": "Community Health Improvement Plan evaluation database",
+          "frequency": "Quarterly",
+          "status": "not_started"
+        },
+        {
+          "id": "33.0-m3",
+          "description": "Increase the number of physicians enrolled in the Cancer Services Program of the Hudson Valley by 5.",
+          "targetDate": "2028-06-30",
+          "baseline": "To be determined",
+          "dataSource": "Provided by the Cancer Services Program of the Hudson Valley",
+          "frequency": "Quarterly",
+          "status": "not_started"
+        }
+      ],
+      "partners": [
+        {
+          "name": "Orange County Department of Health",
+          "shortName": null,
+          "role": "lead",
+          "activityStatus": "named_only",
+          "lastActivityDate": null,
+          "notes": null
+        },
+        {
+          "name": "Bon Secours Community Hospital",
+          "shortName": null,
+          "role": "lead",
+          "activityStatus": "named_only",
+          "lastActivityDate": null,
+          "notes": null
+        },
+        {
+          "name": "Garnet Health",
+          "shortName": null,
+          "role": "lead",
+          "activityStatus": "named_only",
+          "lastActivityDate": null,
+          "notes": null
+        },
+        {
+          "name": "Montefiore St. Luke's Cornwall Hospital",
+          "shortName": null,
+          "role": "lead",
+          "activityStatus": "named_only",
+          "lastActivityDate": null,
+          "notes": null
+        },
+        {
+          "name": "St. Anthony Community Hospital",
+          "shortName": null,
+          "role": "lead",
+          "activityStatus": "named_only",
+          "lastActivityDate": null,
+          "notes": null
+        },
+        {
+          "name": "Orange County Cancer Collaborative",
+          "shortName": null,
+          "role": "lead",
+          "activityStatus": "named_only",
+          "lastActivityDate": null,
+          "notes": null
+        },
+        {
+          "name": "Cancer Services Program of the Hudson Valley",
+          "shortName": null,
+          "role": "lead",
+          "activityStatus": "named_only",
+          "lastActivityDate": null,
+          "notes": null
+        },
+        {
+          "name": "Cornerstone",
+          "shortName": null,
+          "role": "lead",
+          "activityStatus": "named_only",
+          "lastActivityDate": null,
+          "notes": null
+        },
+        {
+          "name": "Orange County Medical Reserve Corps",
+          "shortName": null,
+          "role": "lead",
+          "activityStatus": "named_only",
+          "lastActivityDate": null,
+          "notes": null
+        },
+        {
+          "name": "Orange County Community Health Improvement Plan Steering Committee",
+          "shortName": null,
+          "role": "advisory",
+          "activityStatus": "named_only",
+          "lastActivityDate": null,
+          "notes": null
+        },
+        {
+          "name": "American Cancer Society",
+          "shortName": null,
+          "role": "advisory",
+          "activityStatus": "named_only",
+          "lastActivityDate": null,
+          "notes": null
+        },
+        {
+          "name": "Cultivating Health and Justice Initiative",
+          "shortName": null,
+          "role": "advisory",
+          "activityStatus": "named_only",
+          "lastActivityDate": null,
+          "notes": null
+        },
+        {
+          "name": "Health First",
+          "shortName": null,
+          "role": "advisory",
+          "activityStatus": "named_only",
+          "lastActivityDate": null,
+          "notes": "Insurance partner"
+        },
+        {
+          "name": "Affinity by Molina",
+          "shortName": null,
+          "role": "advisory",
+          "activityStatus": "named_only",
+          "lastActivityDate": null,
+          "notes": "Insurance partner"
+        },
+        {
+          "name": "Touro Medical College",
+          "shortName": null,
+          "role": "advisory",
+          "activityStatus": "named_only",
+          "lastActivityDate": null,
+          "notes": null
+        },
+        {
+          "name": "Hometown Healthcare",
+          "shortName": null,
+          "role": "advisory",
+          "activityStatus": "named_only",
+          "lastActivityDate": null,
+          "notes": null
+        }
+      ]
+    }
+  ]
+}
