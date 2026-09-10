@@ -74,10 +74,10 @@ export default function Timeline({ data }) {
               {byYear.get(year).map(({ id, priority, milestone, colorIdx }) => {
                 const c = PALETTE[colorIdx];
                 return (
-                  <li key={id} className="pl-8 pr-2 py-3 relative">
+                  <li key={id} className="timeline-row pl-8 pr-2 py-3 relative" tabIndex="0">
                     <span
                       aria-hidden="true"
-                      className={`absolute left-0 top-4 inline-block w-5 h-5 rounded-full ${c.dot} ring-4 ring-slate-50`}
+                      className={`timeline-dot absolute left-0 top-4 inline-block w-5 h-5 rounded-full ${c.dot} ring-4 ring-slate-50`}
                     />
                     <div className="flex flex-wrap items-baseline gap-x-3 text-sm">
                       <span className="font-semibold text-slate-900">

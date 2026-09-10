@@ -21,3 +21,34 @@ body {
   @apply sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50
          focus:bg-brand-blue focus:text-white focus:px-3 focus:py-2 focus:rounded;
 }
+
+/* Timeline dot pulse animation — subtle civic tone.
+   Triggers on hover or when parent row has keyboard focus. */
+@keyframes timeline-dot-pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 currentColor;
+  }
+  50% {
+    transform: scale(1.15);
+    box-shadow: 0 0 0 6px transparent;
+  }
+}
+
+.timeline-dot {
+  transition: transform 150ms ease-out, box-shadow 150ms ease-out;
+}
+
+.timeline-dot:hover,
+.timeline-row:focus-within .timeline-dot {
+  animation: timeline-dot-pulse 0.8s ease-in-out infinite;
+}
+
+/* Respect reduced motion preference — disable pulse, use static highlight. */
+@media (prefers-reduced-motion: reduce) {
+  .timeline-dot:hover,
+  .timeline-row:focus-within .timeline-dot {
+    animation: none;
+    transform: scale(1.1);
+  }
+}
