@@ -4,13 +4,17 @@ import ProgressBar from './ProgressBar.jsx';
 /**
  * Compact card for the landing page. Skimmable, plain-language.
  * The whole card is a clickable region (a large link).
+ *
+ * Accepts optional `style` and `className` props for animation support
+ * (e.g., stagger animations from parent).
  */
-export default function PriorityCard({ priority }) {
+export default function PriorityCard({ priority, style, className = '' }) {
   return (
     <Link
       to={`/priority/${priority.id}`}
-      className="group bg-white rounded-lg shadow-sm border border-slate-200 hover:shadow-md hover:border-brand-blue/40 transition-all overflow-hidden flex flex-col focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue focus-visible:ring-offset-2"
+      className={`group bg-white rounded-lg shadow-sm border border-slate-200 hover:shadow-md hover:border-brand-blue/40 transition-all overflow-hidden flex flex-col focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue focus-visible:ring-offset-2 ${className}`}
       aria-label={`See full details for ${priority.priority}`}
+      style={style}
     >
       <div className="bg-brand-blueLight px-5 py-3 border-b border-slate-200">
         <div className="text-xs font-semibold uppercase tracking-wide text-brand-blueDark">

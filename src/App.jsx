@@ -1,6 +1,7 @@
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Header from './components/Header.jsx';
 import Footer from './components/Footer.jsx';
+import PageTransition from './components/PageTransition.jsx';
 import Landing from './pages/Landing.jsx';
 import PriorityArea from './pages/PriorityArea.jsx';
 import Timeline from './pages/Timeline.jsx';
@@ -23,15 +24,17 @@ export default function App() {
       <div className="min-h-screen flex flex-col">
         <Header meta={chipData.meta} />
         <main id="main" className="flex-1 focus:outline-none" tabIndex={-1}>
-          <Routes>
-            <Route path="/" element={<Landing data={chipData} />} />
-            <Route path="/priority/:id" element={<PriorityArea data={chipData} />} />
-            <Route path="/timeline" element={<Timeline data={chipData} />} />
-            <Route path="/partners" element={<Partners data={chipData} />} />
-            <Route path="/methodology" element={<DataMethodology data={chipData} />} />
-            <Route path="/get-involved" element={<GetInvolved data={chipData} />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
+          <PageTransition>
+            <Routes>
+              <Route path="/" element={<Landing data={chipData} />} />
+              <Route path="/priority/:id" element={<PriorityArea data={chipData} />} />
+              <Route path="/timeline" element={<Timeline data={chipData} />} />
+              <Route path="/partners" element={<Partners data={chipData} />} />
+              <Route path="/methodology" element={<DataMethodology data={chipData} />} />
+              <Route path="/get-involved" element={<GetInvolved data={chipData} />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </PageTransition>
         </main>
         <Footer meta={chipData.meta} />
       </div>

@@ -62,8 +62,13 @@ export default function Timeline({ data }) {
       </ul>
 
       <div className="mt-8 space-y-8">
-        {years.map((year) => (
-          <section key={year} aria-labelledby={`year-${year}`}>
+        {years.map((year, yearIndex) => (
+          <section
+            key={year}
+            aria-labelledby={`year-${year}`}
+            className="animate-stagger"
+            style={{ '--stagger-index': yearIndex }}
+          >
             <h2
               id={`year-${year}`}
               className="text-lg font-semibold text-slate-900 border-b border-slate-200 pb-2 sticky top-0 bg-slate-50/95 backdrop-blur"
@@ -71,10 +76,14 @@ export default function Timeline({ data }) {
               {year}
             </h2>
             <ol className="mt-4 relative before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200">
-              {byYear.get(year).map(({ id, priority, milestone, colorIdx }) => {
+              {byYear.get(year).map(({ id, priority, milestone, colorIdx }, itemIndex) => {
                 const c = PALETTE[colorIdx];
                 return (
-                  <li key={id} className="pl-8 pr-2 py-3 relative">
+                  <li
+                    key={id}
+                    className="pl-8 pr-2 py-3 relative animate-stagger"
+                    style={{ '--stagger-index': yearIndex + itemIndex + 1 }}
+                  >
                     <span
                       aria-hidden="true"
                       className={`absolute left-0 top-4 inline-block w-5 h-5 rounded-full ${c.dot} ring-4 ring-slate-50`}

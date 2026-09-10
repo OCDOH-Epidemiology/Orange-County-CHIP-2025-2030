@@ -47,8 +47,13 @@ export default function Landing({ data }) {
           being used.
         </p>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {data.priorityAreas.map((p) => (
-            <PriorityCard key={p.id} priority={p} />
+          {data.priorityAreas.map((p, index) => (
+            <PriorityCard
+              key={p.id}
+              priority={p}
+              style={{ '--stagger-index': index }}
+              className="animate-stagger"
+            />
           ))}
         </div>
       </section>
@@ -62,21 +67,25 @@ export default function Landing({ data }) {
             to="/timeline"
             title="Timeline"
             body="See every milestone from 2026 through 2030 on one chronological view."
+            staggerIndex={0}
           />
           <LinkTile
             to="/partners"
             title="Partner directory"
             body="All lead and advisory partners across the three priority areas."
+            staggerIndex={1}
           />
           <LinkTile
             to="/methodology"
             title="Data & methodology"
             body="Data sources, survey years, and what the numbers actually mean."
+            staggerIndex={2}
           />
           <LinkTile
             to="/get-involved"
             title="Get involved"
             body="How residents and organizations can join a workgroup or share feedback."
+            staggerIndex={3}
           />
         </div>
       </section>
@@ -84,11 +93,12 @@ export default function Landing({ data }) {
   );
 }
 
-function LinkTile({ to, title, body }) {
+function LinkTile({ to, title, body, staggerIndex = 0 }) {
   return (
     <Link
       to={to}
-      className="block rounded-lg border border-slate-200 bg-white p-5 shadow-sm hover:shadow-md transition-shadow"
+      className="animate-stagger block rounded-lg border border-slate-200 bg-white p-5 shadow-sm hover:shadow-md transition-shadow"
+      style={{ '--stagger-index': staggerIndex }}
     >
       <div className="text-base font-semibold text-brand-blue">{title}</div>
       <p className="mt-1 text-sm text-slate-700">{body}</p>

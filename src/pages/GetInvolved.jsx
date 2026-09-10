@@ -25,11 +25,15 @@ export default function GetInvolved({ data }) {
             in these topics is welcome to participate.
           </p>
           <ul className="mt-4 grid gap-3 sm:grid-cols-3">
-            {data.priorityAreas.map((p) => (
-              <li key={p.id}>
+            {data.priorityAreas.map((p, index) => (
+              <li
+                key={p.id}
+                className="animate-stagger"
+                style={{ '--stagger-index': index }}
+              >
                 <Link
                   to={`/priority/${p.id}`}
-                  className="block h-full rounded-md border border-slate-200 bg-white p-4 hover:shadow-sm"
+                  className="block h-full rounded-md border border-slate-200 bg-white p-4 hover:shadow-sm transition-shadow"
                 >
                   <div className="text-xs font-semibold uppercase tracking-wide text-brand-blue">
                     {p.domain}
