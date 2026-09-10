@@ -1,7 +1,13 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import Breadcrumbs from '../components/Breadcrumbs.jsx';
-import { formatLongDate, milestoneStatusLabel } from '../lib/format.js';
+import { 
+  formatLongDate, 
+  milestoneStatusLabel,
+  calculateActivityProgress,
+  deriveActivityBadge,
+  ACTIVITY_BADGE_STYLES 
+} from '../lib/format.js';
 
 /**
  * Cross-cutting timeline: every milestone from all priority areas, grouped by
@@ -155,10 +161,14 @@ function MilestoneItem({ milestone, colorIdx, revealIndex }) {
 /**
  * Priority section with chapter title animation.
  * Each priority area is a "chapter" in the scroll story.
+ * Includes activity badge derived from milestone progress.
  */
 function PrioritySection({ priority, colorIdx, isActive, sectionRef }) {
   const c = PALETTE[colorIdx];
   const milestones = priority.milestones;
+  const activityPct = calculateActivityProgress(milestones);
+  const { badge, label } = deriveActivityBadge(priority);
+  const badgeStyle = ACTIVITY_BADGE_STYLES[badge];
   
   return (
     <section 
@@ -173,16 +183,25 @@ function PrioritySection({ priority, colorIdx, isActive, sectionRef }) {
             className={`flex-shrink-0 w-4 h-4 rounded-full ${c.dot} mt-1`}
           />
           <div className="flex-1">
-            <Link 
-              to={`/priority/${priority.id}`}
-              id={`priority-${priority.id}`}
-              className={`priority-chapter-title block text-xl font-bold hover:underline transition-colors ${isActive ? c.text : 'text-slate-900'}`}
-            >
-              {priority.priority}
-            </Link>
-            <p className="text-sm text-slate-600 mt-0.5">{priority.domain}</p>
+            <div className="flex flex-wrap items-center gap-2 mb-1">
+              <Link 
+                to={`/priority/${priority.id}`}
+                id={`priority-${priority.id}`}
+                className={`priority-chapter-title block text-xl font-bold hover:underline transition-colors ${isActive ? c.text : 'text-slate-900'}`}
+              >
+                {priority.priority}
+              </Link>
+              <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border ${badgeStyle.bg} ${badgeStyle.text} ${badgeStyle.border}`}>
+                <span aria-hidden="true">{badgeStyle.icon}</span>
+                {label}
+              </span>
+            </div>
+            <p className="text-sm text-slate-600">{priority.domain}</p>
             <p className="text-sm text-slate-700 mt-1">
               <span className="font-medium">Goal:</span> {priority.goal}
+            </p>
+            <p className="text-xs text-slate-500 mt-1">
+              Activity progress: {Math.round(activityPct)}%
             </p>
           </div>
         </div>
@@ -335,7 +354,7 @@ export default function Timeline({ data }) {
     }
   }, []);
 
-  // Calculate milestone stats
+  // Calculate milestone stats and activity progress
   const totalMilestones = priorities.reduce((n, p) => n + p.milestones.length, 0);
   const completedMilestones = priorities.reduce(
     (n, p) => n + p.milestones.filter(m => m.status === 'complete').length, 
@@ -345,6 +364,11 @@ export default function Timeline({ data }) {
     (n, p) => n + p.milestones.filter(m => m.status === 'in_progress').length, 
     0
   );
+  const completeOrUnderway = completedMilestones + inProgressMilestones;
+  
+  // Plan-level activity progress (mean of area percents)
+  const areaPercents = priorities.map(p => calculateActivityProgress(p.milestones));
+  const planActivityPct = areaPercents.reduce((sum, pct) => sum + pct, 0) / areaPercents.length;
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
@@ -356,13 +380,26 @@ export default function Timeline({ data }) {
         as we work toward our 2030 goals.
       </p>
 
-      {/* Progress summary */}
+      {/* Progress summary with Activity Progress */}
       <div className="mt-6 p-4 rounded-lg bg-slate-100 border border-slate-200">
-        <div className="flex flex-wrap gap-6 text-sm">
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-3">
           <div>
-            <span className="text-slate-600">Total milestones:</span>{' '}
-            <span className="font-semibold text-slate-900">{totalMilestones}</span>
+            <h3 className="text-sm font-semibold text-slate-700">Plan Activity Progress</h3>
+            <p className="text-xs text-slate-500">
+              {completeOrUnderway} of {totalMilestones} milestones complete or underway
+            </p>
           </div>
+          <div className="text-xl font-bold text-brand-blue">
+            {Math.round(planActivityPct)}%
+          </div>
+        </div>
+        <div className="h-2 w-full rounded-full bg-slate-200 overflow-hidden mb-3">
+          <div
+            className="h-full transition-[width] duration-500 ease-out bg-brand-blue"
+            style={{ width: `${Math.min(planActivityPct, 100)}%` }}
+          />
+        </div>
+        <div className="flex flex-wrap gap-6 text-sm">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-green-500" aria-hidden="true" />
             <span className="text-slate-600">Complete:</span>{' '}

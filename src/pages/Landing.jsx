@@ -1,7 +1,25 @@
 import { Link } from 'react-router-dom';
 import PriorityCard from '../components/PriorityCard.jsx';
+import { calculatePlanActivityProgress, getMilestoneCounts } from '../lib/format.js';
 
 export default function Landing({ data }) {
+  // Calculate plan-level activity progress
+  const planProgressPct = calculatePlanActivityProgress(data.priorityAreas);
+  const totalMilestones = data.priorityAreas.reduce(
+    (sum, p) => sum + p.milestones.length, 0
+  );
+  const totalCounts = data.priorityAreas.reduce(
+    (acc, p) => {
+      const counts = getMilestoneCounts(p.milestones);
+      return {
+        complete: acc.complete + counts.complete,
+        inProgress: acc.inProgress + counts.inProgress,
+        completeOrUnderway: acc.completeOrUnderway + counts.completeOrUnderway,
+      };
+    },
+    { complete: 0, inProgress: 0, completeOrUnderway: 0 }
+  );
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 sm:py-12">
       <section aria-labelledby="hero-title" className="mb-10">
@@ -21,6 +39,40 @@ export default function Landing({ data }) {
           doing the work. This dashboard shows what Orange County is working on
           and how it is going.
         </p>
+        
+        {/* Plan-level Activity Progress */}
+        <div className="mt-6 p-4 rounded-lg bg-slate-100 border border-slate-200">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h2 className="text-sm font-semibold text-slate-700">Plan Activity Progress</h2>
+              <p className="text-xs text-slate-500 mt-0.5">
+                {totalCounts.completeOrUnderway} of {totalMilestones} milestones complete or underway across all priority areas
+              </p>
+            </div>
+            <div className="text-2xl font-bold text-brand-blue">
+              {Math.round(planProgressPct)}%
+            </div>
+          </div>
+          <div className="mt-3">
+            <div
+              className="h-3 w-full rounded-full bg-slate-200 overflow-hidden"
+              role="progressbar"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={Math.round(planProgressPct)}
+              aria-label={`Plan activity progress: ${Math.round(planProgressPct)}%`}
+            >
+              <div
+                className="h-full transition-[width] duration-500 ease-out bg-brand-blue"
+                style={{ width: `${Math.min(planProgressPct, 100)}%` }}
+              />
+            </div>
+          </div>
+          <p className="mt-2 text-xs text-slate-500">
+            This tracks whether planned work is happening, not yet its effect on health outcomes.
+          </p>
+        </div>
+
         <div className="mt-6 flex flex-wrap gap-3">
           <Link
             to="/methodology"

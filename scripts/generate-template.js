@@ -46,6 +46,10 @@ const PRIORITY_COLS = [
   'targetValue',
   'targetYear',
   'currentValue',
+  'asOfDate',
+  'source',
+  'refreshCycleYears',
+  'direction',
   'dataSource',
   'reportingFrequency',
   'stateComparisonValue',
@@ -61,6 +65,7 @@ const MILESTONE_COLS = [
   'dataSource',
   'frequency',
   'status',
+  'lastUpdated',
 ];
 
 const PARTNER_COLS = [
@@ -100,6 +105,10 @@ const HINTS = {
     targetValue: 81.9,
     targetYear: 2030,
     currentValue: '',
+    asOfDate: '(YYYY-MM-DD when currentValue measured, blank if no current)',
+    source: '(source of currentValue if different from dataSource)',
+    refreshCycleYears: '3  (how many years between measurements)',
+    direction: 'higher_is_better  (or lower_is_better)',
     dataSource: 'Orange County Community Health Survey, 2024',
     reportingFrequency: 'Every 3 years',
     stateComparisonValue: 51.1,
@@ -114,6 +123,7 @@ const HINTS = {
     dataSource: 'CHIP evaluation database',
     frequency: 'Once',
     status: 'not_started  (allowed: not_started | in_progress | complete)',
+    lastUpdated: '(YYYY-MM-DD when status last changed, for activity badge)',
   },
   Partners: {
     priorityId: '# example',
@@ -185,6 +195,10 @@ function buildSampleWorkbook(data) {
     targetValue: p.objective.target.value,
     targetYear: p.objective.target.year,
     currentValue: p.objective.currentValue ?? '',
+    asOfDate: p.objective.asOfDate ?? '',
+    source: p.objective.source ?? '',
+    refreshCycleYears: p.objective.refreshCycleYears ?? '',
+    direction: p.objective.direction ?? '',
     dataSource: p.objective.dataSource,
     reportingFrequency: p.objective.reportingFrequency,
     stateComparisonValue: p.objective.stateComparison ? p.objective.stateComparison.value : '',
@@ -204,6 +218,7 @@ function buildSampleWorkbook(data) {
         dataSource: m.dataSource,
         frequency: m.frequency,
         status: m.status,
+        lastUpdated: m.lastUpdated ?? '',
       });
     }
   }
