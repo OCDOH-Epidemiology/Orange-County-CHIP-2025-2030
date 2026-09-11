@@ -1,10 +1,13 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import Breadcrumbs from '../components/Breadcrumbs.jsx';
+import { ActivityRingMini, StatusMixMini, ActivityRing, StatusMix } from '../components/viz/index.js';
 import { 
   formatLongDate, 
   milestoneStatusLabel,
   calculateActivityProgress,
+  calculatePlanActivityProgress,
+  getMilestoneCounts,
   deriveActivityBadge,
   ACTIVITY_BADGE_STYLES 
 } from '../lib/format.js';
@@ -14,6 +17,8 @@ import {
  * priority area (not calendar year). Within each priority, milestones are
  * ordered chronologically. Scroll-driven storytelling animations reveal
  * milestones as users scroll through the narrative of each priority's journey.
+ * 
+ * Visual-first: Each priority chapter shows ActivityRingMini + StatusMixMini.
  */
 
 const PALETTE = {
@@ -159,14 +164,15 @@ function MilestoneItem({ milestone, colorIdx, revealIndex }) {
 }
 
 /**
- * Priority section with chapter title animation.
+ * Priority section with chapter title and visual graphics.
  * Each priority area is a "chapter" in the scroll story.
- * Includes activity badge derived from milestone progress.
+ * NOW with ActivityRingMini and StatusMixMini for visual-first design.
  */
 function PrioritySection({ priority, colorIdx, isActive, sectionRef }) {
   const c = PALETTE[colorIdx];
   const milestones = priority.milestones;
   const activityPct = calculateActivityProgress(milestones);
+  const counts = getMilestoneCounts(milestones);
   const { badge, label } = deriveActivityBadge(priority);
   const badgeStyle = ACTIVITY_BADGE_STYLES[badge];
   
@@ -178,16 +184,33 @@ function PrioritySection({ priority, colorIdx, isActive, sectionRef }) {
     >
       <div className={`priority-chapter rounded-lg p-4 -mx-4 transition-all duration-300 ${isActive ? c.bg : ''}`}>
         <div className="flex items-start gap-3">
-          <span 
-            aria-hidden="true" 
-            className={`flex-shrink-0 w-4 h-4 rounded-full ${c.dot} mt-1`}
-          />
+          {/* Visual indicator: ActivityRingMini */}
+          <div className="relative flex-shrink-0">
+            <ActivityRingMini
+              percent={activityPct}
+              size={40}
+              strokeWidth={5}
+              label={`Activity progress for ${priority.priority}`}
+              color={colorIdx === 0 ? 'blue' : colorIdx === 1 ? 'green' : 'slate'}
+            />
+            {/* Overlay with percentage */}
+            <div
+              className="absolute inset-0 flex items-center justify-center pointer-events-none"
+              aria-hidden="true"
+            >
+              <span className={`text-[10px] font-bold ${c.text}`}>
+                {Math.round(activityPct)}%
+              </span>
+            </div>
+          </div>
+
           <div className="flex-1">
+            {/* Title row */}
             <div className="flex flex-wrap items-center gap-2 mb-1">
               <Link 
                 to={`/priority/${priority.id}`}
                 id={`priority-${priority.id}`}
-                className={`priority-chapter-title block text-xl font-bold hover:underline transition-colors ${isActive ? c.text : 'text-slate-900'}`}
+                className={`priority-chapter-title block text-lg font-bold hover:underline transition-colors ${isActive ? c.text : 'text-slate-900'}`}
               >
                 {priority.priority}
               </Link>
@@ -196,13 +219,17 @@ function PrioritySection({ priority, colorIdx, isActive, sectionRef }) {
                 {label}
               </span>
             </div>
+            
             <p className="text-sm text-slate-600">{priority.domain}</p>
-            <p className="text-sm text-slate-700 mt-1">
-              <span className="font-medium">Goal:</span> {priority.goal}
-            </p>
-            <p className="text-xs text-slate-500 mt-1">
-              Activity progress: {Math.round(activityPct)}%
-            </p>
+            
+            {/* StatusMixMini */}
+            <div className="mt-2 max-w-xs">
+              <StatusMixMini
+                complete={counts.complete}
+                inProgress={counts.inProgress}
+                notStarted={counts.notStarted}
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -355,67 +382,69 @@ export default function Timeline({ data }) {
   }, []);
 
   // Calculate milestone stats and activity progress
-  const totalMilestones = priorities.reduce((n, p) => n + p.milestones.length, 0);
-  const completedMilestones = priorities.reduce(
-    (n, p) => n + p.milestones.filter(m => m.status === 'complete').length, 
-    0
+  const totalCounts = priorities.reduce(
+    (acc, p) => {
+      const counts = getMilestoneCounts(p.milestones);
+      return {
+        complete: acc.complete + counts.complete,
+        inProgress: acc.inProgress + counts.inProgress,
+        notStarted: acc.notStarted + counts.notStarted,
+        total: acc.total + counts.total,
+      };
+    },
+    { complete: 0, inProgress: 0, notStarted: 0, total: 0 }
   );
-  const inProgressMilestones = priorities.reduce(
-    (n, p) => n + p.milestones.filter(m => m.status === 'in_progress').length, 
-    0
-  );
-  const completeOrUnderway = completedMilestones + inProgressMilestones;
   
   // Plan-level activity progress (mean of area percents)
-  const areaPercents = priorities.map(p => calculateActivityProgress(p.milestones));
-  const planActivityPct = areaPercents.reduce((sum, pct) => sum + pct, 0) / areaPercents.length;
+  const planActivityPct = calculatePlanActivityProgress(priorities);
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
       <Breadcrumbs items={[{ label: 'Overview', to: '/' }, { label: 'Timeline' }]} />
       <h1 className="text-3xl font-bold text-slate-900">Implementation Timeline</h1>
-      <p className="mt-2 text-slate-700 max-w-3xl">
-        Track progress across all {priorities.length} Community Health Improvement Plan 
-        priority areas. Each section shows the milestones and their current status 
-        as we work toward our 2030 goals.
+      <p className="mt-2 text-slate-700 max-w-2xl">
+        Track progress across all {priorities.length} priority areas toward 2030 goals.
       </p>
 
-      {/* Progress summary with Activity Progress */}
-      <div className="mt-6 p-4 rounded-lg bg-slate-100 border border-slate-200">
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-3">
-          <div>
-            <h3 className="text-sm font-semibold text-slate-700">Plan Activity Progress</h3>
-            <p className="text-xs text-slate-500">
-              {completeOrUnderway} of {totalMilestones} milestones complete or underway
+      {/* Visual Progress Summary */}
+      <div className="mt-6 p-5 rounded-xl bg-gradient-to-br from-slate-50 to-brand-blueLight border border-slate-200">
+        <div className="flex flex-col sm:flex-row items-center gap-6">
+          {/* Activity Ring */}
+          <div className="relative flex-shrink-0">
+            <ActivityRing
+              percent={planActivityPct}
+              size={100}
+              strokeWidth={10}
+              label="Plan Activity Progress"
+              color="blue"
+            />
+            <div
+              className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none"
+              aria-hidden="true"
+            >
+              <span className="text-xl font-bold text-brand-blue">
+                {Math.round(planActivityPct)}%
+              </span>
+            </div>
+          </div>
+
+          {/* Status details */}
+          <div className="flex-1 min-w-0">
+            <h2 className="text-base font-semibold text-slate-900 mb-1">
+              Plan Activity Progress
+            </h2>
+            <p className="text-sm text-slate-600 mb-3">
+              {totalCounts.complete + totalCounts.inProgress} of {totalCounts.total} milestones complete or underway
             </p>
-          </div>
-          <div className="text-xl font-bold text-brand-blue">
-            {Math.round(planActivityPct)}%
-          </div>
-        </div>
-        <div className="h-2 w-full rounded-full bg-slate-200 overflow-hidden mb-3">
-          <div
-            className="h-full transition-[width] duration-500 ease-out bg-brand-blue"
-            style={{ width: `${Math.min(planActivityPct, 100)}%` }}
-          />
-        </div>
-        <div className="flex flex-wrap gap-6 text-sm">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-green-500" aria-hidden="true" />
-            <span className="text-slate-600">Complete:</span>{' '}
-            <span className="font-semibold text-green-700">{completedMilestones}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-blue-500" aria-hidden="true" />
-            <span className="text-slate-600">In progress:</span>{' '}
-            <span className="font-semibold text-blue-700">{inProgressMilestones}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-slate-400" aria-hidden="true" />
-            <span className="text-slate-600">Not started:</span>{' '}
-            <span className="font-semibold text-slate-700">
-              {totalMilestones - completedMilestones - inProgressMilestones}
-            </span>
+
+            <StatusMix
+              complete={totalCounts.complete}
+              inProgress={totalCounts.inProgress}
+              notStarted={totalCounts.notStarted}
+              height={16}
+              showLegend={true}
+              compact={true}
+            />
           </div>
         </div>
       </div>

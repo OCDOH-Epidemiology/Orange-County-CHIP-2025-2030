@@ -1,29 +1,30 @@
 import { Link } from 'react-router-dom';
 import PriorityCard from '../components/PriorityCard.jsx';
-import OutcomeWatchCard from '../components/OutcomeWatchCard.jsx';
+import { ActivityRing, StatusMix, OutcomeDumbbellCard } from '../components/viz/index.js';
 import { calculatePlanActivityProgress, getMilestoneCounts } from '../lib/format.js';
 
 export default function Landing({ data }) {
   // Calculate plan-level activity progress
   const planProgressPct = calculatePlanActivityProgress(data.priorityAreas);
-  const totalMilestones = data.priorityAreas.reduce(
-    (sum, p) => sum + p.milestones.length, 0
-  );
+  
+  // Aggregate milestone counts across all areas
   const totalCounts = data.priorityAreas.reduce(
     (acc, p) => {
       const counts = getMilestoneCounts(p.milestones);
       return {
         complete: acc.complete + counts.complete,
         inProgress: acc.inProgress + counts.inProgress,
-        completeOrUnderway: acc.completeOrUnderway + counts.completeOrUnderway,
+        notStarted: acc.notStarted + counts.notStarted,
+        total: acc.total + counts.total,
       };
     },
-    { complete: 0, inProgress: 0, completeOrUnderway: 0 }
+    { complete: 0, inProgress: 0, notStarted: 0, total: 0 }
   );
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 sm:py-12">
-      <section aria-labelledby="hero-title" className="mb-10">
+      {/* Hero Section - Visual First */}
+      <section aria-labelledby="hero-title" className="mb-12">
         <div className="text-xs font-semibold uppercase tracking-wide text-brand-blue">
           Community Health Improvement Plan • 2025–2030
         </div>
@@ -31,94 +32,135 @@ export default function Landing({ data }) {
           id="hero-title"
           className="mt-2 text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight"
         >
-          Tracking Orange County's public health priorities.
+          Orange County's public health roadmap
         </h1>
-        <p className="mt-4 max-w-3xl text-lg text-slate-700">
-          A Community Health Improvement Plan is a five-year, public roadmap
-          for improving the health of a community. It identifies the most
-          pressing health needs, sets measurable goals, and names the partners
-          doing the work. This dashboard shows what Orange County is working on
-          and how it is going.
+        <p className="mt-2 text-slate-600 max-w-xl">
+          Tracking progress on our community's five-year health priorities.
         </p>
-        
-        {/* Plan-level Activity Progress */}
-        <div className="mt-6 p-4 rounded-lg bg-slate-100 border border-slate-200">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <h2 className="text-sm font-semibold text-slate-700">Plan Activity Progress</h2>
-              <p className="text-xs text-slate-500 mt-0.5">
-                {totalCounts.completeOrUnderway} of {totalMilestones} milestones complete or underway across all priority areas
-              </p>
-            </div>
-            <div className="text-2xl font-bold text-brand-blue">
-              {Math.round(planProgressPct)}%
-            </div>
-          </div>
-          <div className="mt-3">
+
+        {/* Visual Hero: ActivityRing + StatusMix */}
+        <div className="mt-8 flex flex-col sm:flex-row items-center gap-8 p-6 rounded-xl bg-gradient-to-br from-slate-50 to-brand-blueLight border border-slate-200">
+          {/* Main Activity Ring */}
+          <div className="relative flex-shrink-0">
+            <ActivityRing
+              percent={planProgressPct}
+              size={160}
+              strokeWidth={16}
+              label="Plan Activity Progress"
+              color="blue"
+            />
+            {/* Center label overlay */}
             <div
-              className="h-3 w-full rounded-full bg-slate-200 overflow-hidden"
-              role="progressbar"
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-valuenow={Math.round(planProgressPct)}
-              aria-label={`Plan activity progress: ${Math.round(planProgressPct)}%`}
+              className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none"
+              aria-hidden="true"
             >
-              <div
-                className="h-full transition-[width] duration-500 ease-out bg-brand-blue"
-                style={{ width: `${Math.min(planProgressPct, 100)}%` }}
-              />
+              <span className="text-3xl font-bold text-brand-blue">
+                {Math.round(planProgressPct)}%
+              </span>
+              <span className="text-xs text-slate-500 mt-0.5">activity</span>
             </div>
           </div>
-          <p className="mt-2 text-xs text-slate-500">
-            This tracks whether planned work is happening, not yet its effect on health outcomes.
-          </p>
-        </div>
 
-        {/* Overall Goals / Outcome Watch Section */}
-        <div className="mt-8">
-          <h2 className="text-lg font-semibold text-slate-900">Overall Goals</h2>
-          <p className="mt-1 text-sm text-slate-600 max-w-2xl">
-            These are the 5-year health outcomes we're working toward. Outcome data updates
-            about once a year (or per each metric's reporting cycle). The Activity Progress
-            above tracks whether the planned work is happening.
-          </p>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {data.priorityAreas.map((p, index) => (
-              <OutcomeWatchCard
-                key={p.id}
-                priority={p}
-                style={{ '--stagger-index': index }}
-                className="animate-stagger"
-              />
-            ))}
+          {/* Status and context */}
+          <div className="flex-1 min-w-0">
+            <h2 className="text-lg font-semibold text-slate-900 mb-1">
+              Plan Activity Progress
+            </h2>
+            <p className="text-sm text-slate-600 mb-4">
+              {totalCounts.complete + totalCounts.inProgress} of {totalCounts.total} milestones complete or underway
+            </p>
+
+            {/* StatusMix bar */}
+            <StatusMix
+              complete={totalCounts.complete}
+              inProgress={totalCounts.inProgress}
+              notStarted={totalCounts.notStarted}
+              height={20}
+              showLegend={true}
+            />
+
+            <p className="mt-3 text-xs text-slate-500">
+              Activity tracks planned work; health outcomes update annually.
+            </p>
           </div>
         </div>
 
-        <div className="mt-8 flex flex-wrap gap-3">
+        {/* Quick links */}
+        <div className="mt-6 flex flex-wrap gap-3">
+          <Link
+            to="/timeline"
+            className="inline-flex items-center gap-1 rounded-md bg-brand-blue px-4 py-2 text-sm font-medium text-white hover:bg-brand-blueDark transition-colors"
+          >
+            View timeline →
+          </Link>
           <Link
             to="/methodology"
-            className="inline-flex items-center gap-1 rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50"
+            className="inline-flex items-center gap-1 rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
           >
-            How the data works
+            How data works
           </Link>
           <Link
             to="/get-involved"
-            className="inline-flex items-center gap-1 rounded-md bg-brand-blue px-4 py-2 text-sm font-medium text-white hover:bg-brand-blueDark"
+            className="inline-flex items-center gap-1 rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
           >
-            Get involved →
+            Get involved
           </Link>
         </div>
       </section>
 
-      <section aria-labelledby="priorities-title">
-        <h2 id="priorities-title" className="text-2xl font-semibold text-slate-900 mb-4">
-          The three priority areas
+      {/* Overall Goals Section - Outcome Dumbbells */}
+      <section aria-labelledby="goals-title" className="mb-12">
+        <div className="flex items-baseline justify-between mb-4">
+          <h2 id="goals-title" className="text-xl font-semibold text-slate-900">
+            5-Year Health Goals
+          </h2>
+          <span className="text-xs text-slate-500">Outcome measures update yearly</span>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {data.priorityAreas.map((p, index) => {
+            const { objective } = p;
+            // Calculate next expected measurement year
+            const lastMeasurementYear = objective.currentValue !== null && objective.asOfDate
+              ? parseInt(objective.asOfDate.split('-')[0], 10)
+              : objective.baseline.year;
+            const cycleYears = objective.refreshCycleYears || 1;
+            const nextExpectedYear = lastMeasurementYear + cycleYears;
+
+            return (
+              <Link
+                key={p.id}
+                to={`/priority/${p.id}`}
+                className="block hover:scale-[1.02] transition-transform focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue focus-visible:ring-offset-2 rounded-lg"
+                style={{ '--stagger-index': index }}
+              >
+                <OutcomeDumbbellCard
+                  title={p.priority}
+                  baseline={objective.baseline}
+                  target={objective.target}
+                  currentValue={objective.currentValue}
+                  asOfDate={objective.asOfDate}
+                  unit={objective.unit}
+                  direction={objective.direction}
+                  metric={objective.metric}
+                  nextExpectedYear={nextExpectedYear}
+                  className="h-full hover:shadow-md hover:border-brand-blue/30 transition-shadow animate-stagger"
+                />
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Priority Areas Section */}
+      <section aria-labelledby="priorities-title" className="mb-12">
+        <h2 id="priorities-title" className="text-xl font-semibold text-slate-900 mb-1">
+          Priority Areas
         </h2>
-        <p className="text-slate-700 mb-6 max-w-3xl">
-          Each priority area addresses a specific health disparity in Orange
-          County. Click any card for milestones, partners, and the strategy
-          being used.
+        <p className="text-sm text-slate-600 mb-4">
+          Each area addresses a specific health disparity.
         </p>
+
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {data.priorityAreas.map((p, index) => (
             <PriorityCard
@@ -131,33 +173,34 @@ export default function Landing({ data }) {
         </div>
       </section>
 
-      <section aria-labelledby="ataglance-title" className="mt-12">
-        <h2 id="ataglance-title" className="text-2xl font-semibold text-slate-900 mb-4">
-          Explore the plan
+      {/* Explore Section */}
+      <section aria-labelledby="explore-title">
+        <h2 id="explore-title" className="text-xl font-semibold text-slate-900 mb-4">
+          Explore
         </h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <LinkTile
             to="/timeline"
             title="Timeline"
-            body="See every milestone across all priority areas with progress tracking."
+            body="Milestones across all areas"
             staggerIndex={0}
           />
           <LinkTile
             to="/partners"
-            title="Partner directory"
-            body="All lead and advisory partners across the three priority areas."
+            title="Partners"
+            body="Lead and advisory organizations"
             staggerIndex={1}
           />
           <LinkTile
             to="/methodology"
-            title="Data & methodology"
-            body="Data sources, survey years, and what the numbers actually mean."
+            title="Methodology"
+            body="Data sources and definitions"
             staggerIndex={2}
           />
           <LinkTile
             to="/get-involved"
-            title="Get involved"
-            body="How residents and organizations can join a workgroup or share feedback."
+            title="Get Involved"
+            body="Join a workgroup"
             staggerIndex={3}
           />
         </div>
@@ -170,11 +213,11 @@ function LinkTile({ to, title, body, staggerIndex = 0 }) {
   return (
     <Link
       to={to}
-      className="animate-stagger block rounded-lg border border-slate-200 bg-white p-5 shadow-sm hover:shadow-md transition-shadow"
+      className="animate-stagger block rounded-lg border border-slate-200 bg-white p-4 shadow-sm hover:shadow-md hover:border-brand-blue/30 transition-all"
       style={{ '--stagger-index': staggerIndex }}
     >
-      <div className="text-base font-semibold text-brand-blue">{title}</div>
-      <p className="mt-1 text-sm text-slate-700">{body}</p>
+      <div className="text-sm font-semibold text-brand-blue">{title}</div>
+      <p className="mt-0.5 text-xs text-slate-600">{body}</p>
     </Link>
   );
 }

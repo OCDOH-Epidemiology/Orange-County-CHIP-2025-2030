@@ -1,18 +1,16 @@
 import { Link } from 'react-router-dom';
-import { ActivityProgressCompact } from './ActivityProgressBar.jsx';
-import { OutcomeWatchCompact } from './OutcomeWatch.jsx';
+import { ActivityRingCompact, StatusMixCompact } from './viz/index.js';
+import { calculateActivityProgress, getMilestoneCounts } from '../lib/format.js';
 
 /**
- * Compact card for the landing page. Skimmable, plain-language.
- * The whole card is a clickable region (a large link).
- *
- * Leads with Activity Progress (milestone-based), not outcome progress.
- * Outcome information shown as secondary compact reference.
- *
- * Accepts optional `style` and `className` props for animation support
- * (e.g., stagger animations from parent).
+ * Visual-first Priority Card for the landing page.
+ * Leads with ActivityRing and StatusMix graphics.
+ * Goal as a short title, not a paragraph.
  */
 export default function PriorityCard({ priority, style, className = '' }) {
+  const progressPct = calculateActivityProgress(priority.milestones);
+  const counts = getMilestoneCounts(priority.milestones);
+
   return (
     <Link
       to={`/priority/${priority.id}`}
@@ -20,30 +18,69 @@ export default function PriorityCard({ priority, style, className = '' }) {
       aria-label={`See full details for ${priority.priority}`}
       style={style}
     >
-      <div className="bg-brand-blueLight px-5 py-3 border-b border-slate-200">
-        <div className="text-xs font-semibold uppercase tracking-wide text-brand-blueDark">
+      {/* Header */}
+      <div className="bg-brand-blueLight px-4 py-3 border-b border-slate-200">
+        <div className="text-[10px] font-semibold uppercase tracking-wide text-brand-blueDark">
           {priority.domain}
         </div>
-        <h3 className="mt-1 text-lg font-semibold text-slate-900 group-hover:text-brand-blue transition-colors">
+        <h3 className="mt-0.5 text-base font-semibold text-slate-900 group-hover:text-brand-blue transition-colors leading-tight">
           {priority.priority}
         </h3>
       </div>
 
-      <div className="p-5 flex-1 flex flex-col gap-4">
-        <div>
-          <div className="text-sm font-semibold text-slate-700">Goal</div>
-          <p className="text-slate-800">{priority.goal}</p>
+      {/* Visual Content */}
+      <div className="p-4 flex-1 flex flex-col">
+        {/* ActivityRing + Progress Stats */}
+        <div className="flex items-center gap-4 mb-4">
+          {/* Ring */}
+          <div className="relative flex-shrink-0">
+            <ActivityRingCompact
+              percent={progressPct}
+              size={64}
+              strokeWidth={7}
+              label={`Activity progress for ${priority.priority}`}
+              color="blue"
+            />
+            {/* Center overlay */}
+            <div
+              className="absolute inset-0 flex items-center justify-center pointer-events-none"
+              aria-hidden="true"
+            >
+              <span className="text-sm font-bold text-brand-blue">
+                {Math.round(progressPct)}%
+              </span>
+            </div>
+          </div>
+
+          {/* Stats text */}
+          <div className="flex-1 min-w-0">
+            <div className="text-sm font-medium text-slate-700">
+              Activity Progress
+            </div>
+            <div className="text-xs text-slate-500 mt-0.5">
+              {counts.completeOrUnderway} of {counts.total} milestones
+            </div>
+          </div>
         </div>
 
-        {/* Primary: Activity Progress (milestone-based) */}
-        <ActivityProgressCompact priority={priority} />
+        {/* StatusMix bar */}
+        <StatusMixCompact
+          complete={counts.complete}
+          inProgress={counts.inProgress}
+          notStarted={counts.notStarted}
+          className="mb-4"
+        />
 
-        {/* Secondary: Outcome reference */}
-        <OutcomeWatchCompact objective={priority.objective} />
+        {/* Goal - short title form */}
+        <div className="flex-1">
+          <div className="text-xs font-medium text-slate-500 uppercase tracking-wide">Goal</div>
+          <p className="text-sm text-slate-800 mt-0.5 line-clamp-2">{priority.goal}</p>
+        </div>
 
-        <div className="mt-auto pt-2">
-          <span className="inline-flex items-center gap-1 text-brand-blue font-medium group-hover:underline">
-            See full details
+        {/* Link hint */}
+        <div className="mt-3 pt-2 border-t border-slate-100">
+          <span className="inline-flex items-center gap-1 text-sm text-brand-blue font-medium group-hover:underline">
+            View details
             <span aria-hidden="true">→</span>
           </span>
         </div>
