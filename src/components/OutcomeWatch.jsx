@@ -214,6 +214,7 @@ function parseRefreshFrequency(freq) {
 
 /**
  * Compact variant for summary views.
+ * Shows the 5-year health outcome goal (not to be confused with milestone activity).
  */
 export function OutcomeWatchCompact({ objective }) {
   const { baseline, target, currentValue, unit } = objective;
@@ -221,7 +222,7 @@ export function OutcomeWatchCompact({ objective }) {
 
   return (
     <div className="text-xs text-slate-600">
-      <span className="font-medium">Outcome:</span>{' '}
+      <span className="font-medium">5-Year Goal:</span>{' '}
       Baseline {formatValue(baseline.value, unit)} ({baseline.year}) → 
       Target {formatValue(target.value, unit)} ({target.year})
       {hasCurrentValue ? (

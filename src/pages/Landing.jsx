@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import PriorityCard from '../components/PriorityCard.jsx';
+import OutcomeWatchCard from '../components/OutcomeWatchCard.jsx';
 import { calculatePlanActivityProgress, getMilestoneCounts } from '../lib/format.js';
 
 export default function Landing({ data }) {
@@ -73,7 +74,27 @@ export default function Landing({ data }) {
           </p>
         </div>
 
-        <div className="mt-6 flex flex-wrap gap-3">
+        {/* Overall Goals / Outcome Watch Section */}
+        <div className="mt-8">
+          <h2 className="text-lg font-semibold text-slate-900">Overall Goals</h2>
+          <p className="mt-1 text-sm text-slate-600 max-w-2xl">
+            These are the 5-year health outcomes we're working toward. Outcome data updates
+            about once a year (or per each metric's reporting cycle). The Activity Progress
+            above tracks whether the planned work is happening.
+          </p>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {data.priorityAreas.map((p, index) => (
+              <OutcomeWatchCard
+                key={p.id}
+                priority={p}
+                style={{ '--stagger-index': index }}
+                className="animate-stagger"
+              />
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-8 flex flex-wrap gap-3">
           <Link
             to="/methodology"
             className="inline-flex items-center gap-1 rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50"
@@ -118,7 +139,7 @@ export default function Landing({ data }) {
           <LinkTile
             to="/timeline"
             title="Timeline"
-            body="See every milestone from 2026 through 2030 on one chronological view."
+            body="See every milestone across all priority areas with progress tracking."
             staggerIndex={0}
           />
           <LinkTile
