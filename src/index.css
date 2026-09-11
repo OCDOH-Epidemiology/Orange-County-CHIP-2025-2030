@@ -342,4 +342,29 @@ body {
     padding-left: 0;
     margin-left: 0;
   }
+
+  /* ActivityRing: disable spin animation, show static state */
+  .activity-ring-svg {
+    animation: none !important;
+  }
+  
+  .activity-ring-progress {
+    transition: none !important;
+  }
+}
+
+/* ==========================================================================
+   Visual Component Styles (ActivityRing, StatusMix, OutcomeDumbbell).
+   Civic scorecard-style graphics: glanceable, accessible, not chart-library heavy.
+   ========================================================================== */
+
+/* --- ActivityRing entrance animation (optional subtle spin) --- */
+@keyframes ringFillIn {
+  from {
+    stroke-dashoffset: var(--circumference, 377);
+  }
+}
+
+.activity-ring-progress {
+  transform-origin: center;
 }
