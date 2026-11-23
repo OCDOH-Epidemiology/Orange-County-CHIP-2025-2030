@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Breadcrumbs from '../components/Breadcrumbs.jsx';
+import { track } from '../lib/analytics.js';
 
 /**
  * Partner directory across all priority areas. One row per partner + priority
@@ -54,7 +55,11 @@ export default function Partners({ data }) {
           <span className="block font-medium">Priority area</span>
           <select
             value={priorityFilter}
-            onChange={(e) => setPriorityFilter(e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value;
+              setPriorityFilter(value);
+              track('filter_changed', { filter: 'priority', value });
+            }}
             className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2"
           >
             <option value="all">All priority areas</option>
@@ -67,7 +72,11 @@ export default function Partners({ data }) {
           <span className="block font-medium">Role</span>
           <select
             value={roleFilter}
-            onChange={(e) => setRoleFilter(e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value;
+              setRoleFilter(value);
+              track('filter_changed', { filter: 'role', value });
+            }}
             className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2"
           >
             <option value="all">Lead and advisory</option>
@@ -81,6 +90,7 @@ export default function Partners({ data }) {
             type="search"
             value={q}
             onChange={(e) => setQ(e.target.value)}
+            onBlur={(e) => track('search_used', { query_length: e.target.value.length })}
             placeholder="Organization name…"
             className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2"
           />

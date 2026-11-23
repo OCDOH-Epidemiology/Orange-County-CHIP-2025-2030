@@ -145,6 +145,13 @@ export default function DataMethodology({ data }) {
             </li>
           </ul>
         </Section>
+
+        <Section title="Website analytics">
+          <p>
+            This site uses privacy-friendly, cookieless analytics to understand which data is most used.
+          </p>
+        </Section>
+
       </div>
     </div>
   );

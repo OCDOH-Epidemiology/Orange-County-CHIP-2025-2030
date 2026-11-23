@@ -1,4 +1,6 @@
-import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { useEffect, useRef } from 'react';
+import { HashRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { track } from './lib/analytics.js';
 import Header from './components/Header.jsx';
 import Footer from './components/Footer.jsx';
 import PageTransition from './components/PageTransition.jsx';
@@ -17,9 +19,25 @@ import chipData from './data/chip-data.json';
  * GitHub Pages without server-side rewrite rules. URLs look like
  *   https://<user>.github.io/<repo>/#/priority/nutrition-security
  */
+
+function RouteAnalytics() {
+  const location = useLocation();
+  const isFirst = useRef(true);
+  useEffect(() => {
+    // The head snippet already captures the first pageview.
+    if (isFirst.current) {
+      isFirst.current = false;
+      return;
+    }
+    track("$pageview", { $pathname: location.pathname || "/" });
+  }, [location.pathname]);
+  return null;
+}
+
 export default function App() {
   return (
     <HashRouter>
+      <RouteAnalytics />
       <a href="#main" className="skip-link">Skip to main content</a>
       <div className="min-h-screen flex flex-col">
         <Header meta={chipData.meta} />
